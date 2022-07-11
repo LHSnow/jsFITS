@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div id="demo"></div>
+
+  <script type="module">
+    import { html, render } from 'lit';
+    import '../fits-img.js';
+
+    const src = 'bleh';
+    render(
+      html`
+        <fits-img .src=${src}>
+          some light-dom
+        </fits-img>
+      `,
+      document.querySelector('#demo')
+    );
+  </script>
+</body>
+</html>

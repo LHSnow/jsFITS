@@ -1,3 +1,4 @@
 *.fits
 *.png
 .idea
+node_modules
