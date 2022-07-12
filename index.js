@@ -1,1 +1,1 @@
-export { FitsImg } from './src/FitsImg.js';
+export { FITS } from './fits.js';

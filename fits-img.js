@@ -1,3 +1,3 @@
-import { FitsImg } from './src/FitsImg.js';
+import { FITS } from './fits.js';
 
-window.customElements.define('fits-img', FitsImg);
+window.customElements.define('fits-img', FITS);

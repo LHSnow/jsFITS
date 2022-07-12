@@ -15,12 +15,10 @@
     import { html, render } from 'lit';
     import '../fits-img.js';
 
-    const src = 'bleh';
+    const src = '2022-03-03T19.27.15E.replaced.fits';
     render(
       html`
-        <fits-img .src=${src}>
-          some light-dom
-        </fits-img>
+        <fits-img .src=${src}></fits-img>
       `,
       document.querySelector('#demo')
     );

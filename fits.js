@@ -2,10 +2,11 @@
  * Javascript FITS Reader 0.2
  * Copyright (c) 2010 Stuart Lowe http://lcogt.net/
  *
- * Licensed under the MPL http://www.mozilla.org/MPL/MPL-1.1.txt
+ * Licensed under MIT
  *
  */
 
+import { html, LitElement } from 'lit';
 import {
   stretchCuberoot,
   stretchLinear,
@@ -28,17 +29,23 @@ import {
 } from './src/parse-fits-header.js';
 import { swap16, systemBigEndian } from './src/endian.js';
 
-export class FITS {
-  constructor(input) {
-    this.src = typeof input === 'string' ? input : '';
+export class FITS extends LitElement {
+  constructor() {
+    super();
+    this.src = '';
     this.stretch = 'linear';
     this.color = 'gray';
-    this.depth = 0;
+    this.width = 0;
+    this.height = 0;
     this.z = 0;
     this.scaleCutoff = 0.999;
-    this.events = { load: '', click: '', mousemove: '' }; // Let's define some events
-    this.data = { load: '', click: '', mousemove: '' }; // Let's define some event data
-    this.stretchFunctions = {
+    this._binaryImage = null;
+    this._depth = 0;
+    this._header = {};
+    this._canvas = null;
+    this._ctx = null;
+    this._rgbImage = null;
+    this._stretchFunctions = {
       linear: stretchLinear,
       sqrt: stretchSqrt,
       cuberoot: stretchCuberoot,
@@ -47,7 +54,7 @@ export class FITS {
       sqrtlog: stretchSqrtlog,
     };
     // Colour scales defined by SAOImage
-    this.colormaps = {
+    this._colormaps = {
       blackbody: colormapHeat,
       heat: colormapHeat,
       A: colormapA,
@@ -56,31 +63,47 @@ export class FITS {
     };
   }
 
-  // Loads the FITS file using an ajax request. To call your own function after
-  // the FITS file is loaded, you should either provide a callback directly or have
-  // already set the load function.
-  load(source, fnCallback) {
-    if (typeof source === 'string') this.src = source;
-    if (typeof this.src === 'string') {
-      this.image = null;
-      if (typeof fnCallback === 'function') this.bind('load', fnCallback);
-      const oReq = new XMLHttpRequest();
-      oReq.open('GET', this.src, true);
-      oReq.responseType = 'blob';
-      const self = this;
-
-      oReq.onload = () => {
-        self.readFITSHeader(oReq.response).then(headerOffset => {
-          if (self.header.NAXIS >= 2) {
-            self.readFITSImage(oReq.response, headerOffset).then(() => {
-              self.triggerEvent('load');
-            });
-          }
-        });
-      };
-      oReq.send();
+  willUpdate(changedProperties) {
+    if (changedProperties.has('src')) {
+      this.fetch().then(() => {
+        if (!this._rgbImage && this._ctx) {
+          this._rgbImage = this._ctx.createImageData(this.width, this.height);
+        }
+        this.draw();
+      });
     }
-    return this;
+  }
+
+  render() {
+    return html`<canvas
+      id="canvas"
+      width="${this.width}"
+      height="${this.height}"
+    ></canvas>`;
+  }
+
+  // Loads the FITS file using an ajax request
+  fetch() {
+    const self = this;
+    return new Promise(resolve => {
+      if (this.src.length) {
+        self._binaryImage = null;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', this.src, true);
+        xhr.responseType = 'blob';
+
+        xhr.onload = () => {
+          self.readFITSHeader(xhr.response).then(headerOffset => {
+            if (self._header.NAXIS >= 2) {
+              self.readFITSImage(xhr.response, headerOffset).then(() => {
+                resolve();
+              });
+            }
+          });
+        };
+        xhr.send();
+      }
+    });
   }
 
   // Parse the ASCII header from the FITS file. It should be at the start.
@@ -90,6 +113,7 @@ export class FITS {
     const header = {};
     let inHeader = true;
     const headerUnitChars = 80;
+    const self = this;
 
     return blob.text().then(asText => {
       while (iOffset < iLength && inHeader) {
@@ -118,13 +142,13 @@ export class FITS {
       }
 
       if (header.NAXIS >= 2) {
-        if (typeof header.NAXIS1 === 'number') this.width = header.NAXIS1;
-        if (typeof header.NAXIS2 === 'number') this.height = header.NAXIS2;
+        if (typeof header.NAXIS1 === 'number') self.width = header.NAXIS1;
+        if (typeof header.NAXIS2 === 'number') self.height = header.NAXIS2;
       }
 
       if (header.NAXIS > 2 && typeof header.NAXIS3 === 'number')
-        this.depth = header.NAXIS3;
-      else this.depth = 1;
+        self._depth = header.NAXIS3;
+      else this._depth = 1;
 
       if (typeof header.BSCALE === 'undefined') header.BSCALE = 1;
       if (typeof header.BZERO === 'undefined') header.BZERO = 0;
@@ -132,7 +156,7 @@ export class FITS {
       // Remove any space padding
       while (iOffset < iLength && asText[iOffset] === ' ') iOffset += 1;
 
-      this.header = header;
+      self._header = header;
       return iOffset;
     });
   }
@@ -142,15 +166,15 @@ export class FITS {
       .slice(headerOffset)
       .arrayBuffer()
       .then(buf => {
-        switch (this.header.BITPIX) {
+        switch (this._header.BITPIX) {
           case 16:
-            this.image = new Uint16Array(buf);
+            this._binaryImage = new Uint16Array(buf);
             if (!systemBigEndian()) {
-              this.image = this.image.map(swap16);
+              this._binaryImage = this._binaryImage.map(swap16);
             }
             return true;
           case -32:
-            this.image = new Float32Array(buf);
+            this._binaryImage = new Float32Array(buf);
             return true;
           default:
             return false;
@@ -158,64 +182,17 @@ export class FITS {
       });
   }
 
-  // Use <canvas> to draw a 2D image
-  draw(id, type) {
-    if (id) {
-      this.id = id;
+  firstUpdated() {
+    this._canvas = this.renderRoot.querySelector('#canvas');
+    if (this._canvas) {
+      this._ctx = this._canvas.getContext('2d');
+      this.draw();
     }
-    if (type) {
-      this.stretch = type;
-    }
-
-    // Now we want to build the <canvas> element that will hold our image
-    const el = document.getElementById(id);
-    if (el != null) {
-      // Look for a <canvas> with the specified ID or fall back on a <div>
-      if (typeof el === 'object' && el.tagName !== 'CANVAS') {
-        // Looks like the element is a container for our <canvas>
-        el.setAttribute('id', `${this.id}holder`);
-        const canvas = document.createElement('canvas');
-        canvas.style.display = 'block';
-        canvas.setAttribute('width', this.width);
-        canvas.setAttribute('height', this.height);
-        canvas.setAttribute('id', this.id);
-        el.appendChild(canvas);
-      } else {
-        el.setAttribute('width', this.width);
-        el.setAttribute('height', this.height);
-      }
-      this.canvas = document.getElementById(this.id);
-    } else this.canvas = el;
-    this.ctx = this.canvas.getContext('2d');
-    const self = this;
-    // The object didn't exist before so we add a click event to it
-    if (typeof this.events.click === 'function')
-      this.canvas.addEventListener('click', e => {
-        self.clickListener(e);
-      });
-    if (typeof this.events.mousemove === 'function')
-      this.canvas.addEventListener('mousemove', e => {
-        self.moveListener(e);
-      });
-
-    // create a new batch of pixels with the same
-    // dimensions as the image:
-    this.imageData = this.ctx.createImageData(this.width, this.height);
-
-    this.update(this.stretch, 0);
   }
 
   // Calculate the pixel values using a defined stretch type and draw onto the canvas
-  update(input) {
-    const inp = { ...input };
-    if (typeof inp === 'object') {
-      this.stretch =
-        typeof inp.stretch === 'string' ? inp.stretch : this.stretch;
-      if (typeof inp.index !== 'number' && this.z) inp.index = this.z;
-      this.z = Math.max(0, Math.min(this.depth - 1, Math.abs(inp.index || 0)));
-      this.color = typeof inp.color === 'string' ? inp.color : this.color;
-    } else if (typeof inp === 'string') this.stretch = inp;
-    if (this.image == null) return;
+  draw() {
+    if (!this._binaryImage || !this._ctx) return;
 
     const image = new Uint8ClampedArray(this.width * this.height);
     const frameStart = this.width * this.height * this.z;
@@ -223,7 +200,7 @@ export class FITS {
     const frameEnd = frameStart + image.length;
     let index = 0;
 
-    const frame = this.image.slice(frameStart, frameEnd);
+    const frame = this._binaryImage.slice(frameStart, frameEnd);
     const sorted = frame.slice().sort();
     const maxPercentile = Math.ceil(image.length * this.scaleCutoff);
     const max = sorted[maxPercentile];
@@ -232,88 +209,38 @@ export class FITS {
     }
     const range = max - min;
 
-    for (let i = frameStart; i < frameEnd; i += 1) {
-      let val = this.stretchFunctions[this.stretch](frame[i], min, range);
+    let j = 0;
+    for (let i = frameStart; i < frameEnd; i += 1, j += 1) {
+      let val = this._stretchFunctions[this.stretch](frame[i], min, range);
       if (Number.isNaN(val)) val = 0;
       else if (val < 0) val = 0;
       else if (val > 255) val = 255;
-      image.push(val);
+      image[j] = val;
     }
 
     index = 0;
     for (let row = 0; row < this.height; row += 1) {
       for (let col = 0; col < this.width; col += 1) {
         const pos = ((this.height - row) * this.width + col) * 4;
-        const rgb = this.colormaps[this.color](image[index]);
-        this.imageData.data[pos] = rgb.r;
-        this.imageData.data[pos + 1] = rgb.g;
-        this.imageData.data[pos + 2] = rgb.b;
-        this.imageData.data[pos + 3] = 0xff; // alpha
+        const rgb = this._colormaps[this.color](image[index]);
+        this._rgbImage.data[pos] = rgb.r;
+        this._rgbImage.data[pos + 1] = rgb.g;
+        this._rgbImage.data[pos + 2] = rgb.b;
+        this._rgbImage.data[pos + 3] = 0xff; // alpha
         index += 1;
       }
     }
 
-    this.ctx.putImageData(this.imageData, 0, 0);
-  }
-
-  getCursor(e) {
-    let x;
-    let y;
-    let { target } = e;
-
-    if (e.pageX !== undefined && e.pageY !== undefined) {
-      x = e.pageX;
-      y = e.pageY;
-    } else {
-      x =
-        e.clientX +
-        document.body.scrollLeft +
-        document.body.scrollLeft +
-        document.documentElement.scrollLeft;
-      y =
-        e.clientY +
-        document.body.scrollTop +
-        document.body.scrollTop +
-        document.documentElement.scrollTop;
-    }
-
-    while (target) {
-      x -= target.offsetLeft;
-      y -= target.offsetTop;
-      target = target.offsetParent;
-    }
-    this.cursor = { x, y };
-  }
-
-  clickListener(e) {
-    this.getCursor(e);
-    this.triggerEvent('click', { x: this.cursor.x, y: this.cursor.y });
-  }
-
-  moveListener(e) {
-    this.getCursor(e);
-    this.triggerEvent('mousemove', { x: this.cursor.x, y: this.cursor.y });
-  }
-
-  bind(ev, fn, data = {}) {
-    if (typeof ev !== 'string' || typeof fn !== 'function') return this;
-    if (this.events[ev]) this.events[ev].push(fn);
-    else this.events[ev] = [fn];
-    if (this.data[ev]) this.data[ev].push(data);
-    else this.data[ev] = [data];
-    return this;
-  }
-
-  // Trigger a defined event with arguments.
-  triggerEvent(ev, args = {}) {
-    if (typeof ev !== 'string') return;
-    if (typeof this.events[ev] === 'object') {
-      for (let i = 0; i < this.events[ev].length; i += 1) {
-        const tmpargs = args;
-        tmpargs.data = this.data[ev][i];
-        if (typeof this.events[ev][i] === 'function')
-          this.events[ev][i].call(this, tmpargs);
-      }
-    }
+    this._ctx.putImageData(this._rgbImage, 0, 0);
   }
 }
+
+FITS.properties = {
+  src: { type: String },
+  stretch: { type: String },
+  color: { type: String },
+  width: { type: Number },
+  height: { type: Number },
+  z: { type: Number },
+  scaleCutoff: { type: Number },
+};
