@@ -1,13 +1,11 @@
 <html>
   <head>
     <title>FITS with Javascript</title>
-    <script src="fits.js"></script>
-    <script type="text/javascript">
+    <script src="fits.js" type="module"></script>
+    <script type="module">
+        import {FITS} from './fits.js';
       // Define the FITS object
       var fits = new FITS();
-
-      // Define the stretch function to apply e.g. linear, sqrt, cuberoot, log, loglog, sqrtlog
-      fits.stretch = "linear";
 
       // Bind some events
       fits
