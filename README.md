@@ -18,7 +18,7 @@ npm i fits-img
 <fits-img src="something.fits"></fits-img>
 ```
 
-## Linting and formatting
+### Linting and formatting
 
 To scan the project for linting and formatting errors, run
 
@@ -32,7 +32,7 @@ To automatically fix linting and formatting errors, run
 npm run format
 ```
 
-## Testing with Web Test Runner
+### Testing with Web Test Runner
 
 To execute a single test run:
 
@@ -46,7 +46,7 @@ To run the tests in interactive watch mode run:
 npm run test:watch
 ```
 
-## Demoing with Storybook
+### Demoing with Storybook
 
 To run a local instance of Storybook for your component, run
 
@@ -61,16 +61,20 @@ npm run storybook:build
 ```
 
 
-## Tooling configs
+### Tooling configs
 
 For most of the tools, the configuration is in the `package.json` to minimize the amount of files in your project.
 
 If you customize the configuration a lot, you can consider moving them to individual files.
 
-## Local Demo with `web-dev-server`
+### Local Demo with `web-dev-server`
 
 ```bash
 npm start
 ```
 
 To run a local development server that serves the basic demo located in `demo/index.html`
+
+## Acknowledgements
+
+Largely based on the vanilla js FITS reader [slowe/jsFITS](https://github.com/slowe/jsFITS). 
