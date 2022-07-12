@@ -1,9 +1,9 @@
 {
   "name": "fits-img",
-  "description": "Webcomponent fits-img following open-wc recommendations",
+  "description": "Webcomponent fits-img for viewing and color scaling FITS format images",
   "license": "MIT",
-  "author": "fits-img",
-  "version": "0.0.0",
+  "author": "Lars-Henrik Snow",
+  "version": "0.1.0",
   "main": "index.js",
   "module": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "@open-wc/eslint-config": "^4.3.0",
     "@open-wc/testing": "next",
     "@web/dev-server": "^0.1.28",
-    "@web/dev-server-storybook": "next",
+    "@web/dev-server-storybook": "^0.0.2",
     "@web/test-runner": "^0.13.22",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
