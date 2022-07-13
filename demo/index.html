@@ -24,7 +24,6 @@
 
         constructor() {
           super();
-          this._src = '/2022-03-03T19.27.15E.replaced.fits';
           this._stretch = 'linear';
           this._colormap = 'gray';
           this._scaleCutoff = 0.999;
@@ -44,7 +43,7 @@
 
         render() {
           return html` <fits-img
-              src=${this._src}
+              src="/2022-03-03T19.27.15E.replaced.fits"
               stretch=${this._stretch}
               colormap=${this._colormap}
               scale-cutoff="${this._scaleCutoff}"

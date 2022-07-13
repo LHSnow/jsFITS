@@ -21,8 +21,7 @@ import {
   colormapGray,
   colormapHeat,
 } from './colormap.js';
-import { isBoolean, isDate, isFloat, isString } from './parse-fits-header.js';
-import { swap16, systemBigEndian } from './endian.js';
+import { readFITSHeader, readFITSImage } from './parse-fits.js';
 
 export class FITS extends LitElement {
   constructor() {
@@ -88,92 +87,28 @@ export class FITS extends LitElement {
       xhr.responseType = 'blob';
 
       xhr.onload = () => {
-        self.readFITSHeader(xhr.response).then(headerOffset => {
-          if (self._header.NAXIS >= 2) {
-            self.readFITSImage(xhr.response, headerOffset).then(() => {
-              resolve();
-            });
+        readFITSHeader(xhr.response).then(([header, headerOffset]) => {
+          self._header = header;
+
+          if (header.NAXIS > 2 && typeof header.NAXIS3 === 'number')
+            self._depth = header.NAXIS3;
+          else this._depth = 1;
+
+          if (header.NAXIS >= 2) {
+            if (typeof header.NAXIS1 === 'number') self.width = header.NAXIS1;
+            if (typeof header.NAXIS2 === 'number') self.height = header.NAXIS2;
+
+            readFITSImage(xhr.response, headerOffset, header.BITPIX).then(
+              binaryImage => {
+                this._binaryImage = binaryImage;
+                resolve();
+              }
+            );
           }
         });
       };
       xhr.send();
     });
-  }
-
-  // Parse the ASCII header from the FITS file. It should be at the start.
-  readFITSHeader(blob) {
-    const iLength = blob.size;
-    let iOffset = 0;
-    const header = {};
-    let inHeader = true;
-    const headerUnitChars = 80;
-    const self = this;
-
-    return blob.text().then(asText => {
-      while (iOffset < iLength && inHeader) {
-        const headerUnit = asText.slice(iOffset, iOffset + headerUnitChars);
-        const hdu = headerUnit.split(/[=/]/);
-        const key = hdu[0];
-        let val = hdu[1];
-        if (key.length > 0 && val) {
-          val = val.trim();
-          if (isString(val)) {
-            val = val.replace(/'/g, '').trim();
-            if (isDate(val)) {
-              val = Date.parse(val);
-            }
-          } else if (isBoolean(val)) {
-            val = val.includes('T');
-          } else if (isFloat(val)) {
-            val = parseFloat(val);
-          } else {
-            val = parseInt(val, 10);
-          }
-          header[key.trim()] = val;
-        }
-        if (headerUnit.startsWith('END')) inHeader = false;
-        iOffset += headerUnitChars;
-      }
-
-      if (header.NAXIS >= 2) {
-        if (typeof header.NAXIS1 === 'number') self.width = header.NAXIS1;
-        if (typeof header.NAXIS2 === 'number') self.height = header.NAXIS2;
-      }
-
-      if (header.NAXIS > 2 && typeof header.NAXIS3 === 'number')
-        self._depth = header.NAXIS3;
-      else this._depth = 1;
-
-      if (typeof header.BSCALE === 'undefined') header.BSCALE = 1;
-      if (typeof header.BZERO === 'undefined') header.BZERO = 0;
-
-      // Remove any space padding
-      while (iOffset < iLength && asText[iOffset] === ' ') iOffset += 1;
-
-      self._header = header;
-      return iOffset;
-    });
-  }
-
-  readFITSImage(blob, headerOffset) {
-    return blob
-      .slice(headerOffset)
-      .arrayBuffer()
-      .then(buf => {
-        switch (this._header.BITPIX) {
-          case 16:
-            this._binaryImage = new Uint16Array(buf);
-            if (!systemBigEndian()) {
-              this._binaryImage = this._binaryImage.map(swap16);
-            }
-            return true;
-          case -32:
-            this._binaryImage = new Float32Array(buf);
-            return true;
-          default:
-            return false;
-        }
-      });
   }
 
   firstUpdated() {
