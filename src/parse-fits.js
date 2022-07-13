@@ -36,6 +36,9 @@ export function readFITSHeader(blob) {
   let iOffset = 0;
   const header = {};
   let inHeader = true;
+  let width;
+  let height;
+  let depth;
   const headerUnitChars = 80;
 
   return blob.text().then(asText => {
@@ -67,10 +70,19 @@ export function readFITSHeader(blob) {
     if (typeof header.BSCALE === 'undefined') header.BSCALE = 1;
     if (typeof header.BZERO === 'undefined') header.BZERO = 0;
 
+    if (header.NAXIS > 2 && typeof header.NAXIS3 === 'number') {
+      depth = header.NAXIS3;
+    }
+
+    if (header.NAXIS >= 2) {
+      if (typeof header.NAXIS1 === 'number') width = header.NAXIS1;
+      if (typeof header.NAXIS2 === 'number') height = header.NAXIS2;
+    }
+
     // Remove any space padding
     while (iOffset < iLength && asText[iOffset] === ' ') iOffset += 1;
 
-    return [header, iOffset];
+    return [header, iOffset, width, height, depth];
   });
 }
 

@@ -34,7 +34,7 @@ export class FITS extends LitElement {
     this.z = 0;
     this.scaleCutoff = 0.999;
     this._binaryImage = null;
-    this._depth = 0;
+    this._depth = 1;
     this._header = {};
     this._canvas = null;
     this._ctx = null;
@@ -87,25 +87,23 @@ export class FITS extends LitElement {
       xhr.responseType = 'blob';
 
       xhr.onload = () => {
-        readFITSHeader(xhr.response).then(([header, headerOffset]) => {
-          self._header = header;
+        readFITSHeader(xhr.response).then(
+          ([header, headerOffset, width, height, depth]) => {
+            self._header = header;
+            self.height = height;
+            self.width = width;
+            self._depth = depth > 1 ? depth : 1;
 
-          if (header.NAXIS > 2 && typeof header.NAXIS3 === 'number')
-            self._depth = header.NAXIS3;
-          else this._depth = 1;
-
-          if (header.NAXIS >= 2) {
-            if (typeof header.NAXIS1 === 'number') self.width = header.NAXIS1;
-            if (typeof header.NAXIS2 === 'number') self.height = header.NAXIS2;
-
-            readFITSImage(xhr.response, headerOffset, header.BITPIX).then(
-              binaryImage => {
-                this._binaryImage = binaryImage;
-                resolve();
-              }
-            );
+            if (header.NAXIS >= 2) {
+              readFITSImage(xhr.response, headerOffset, header.BITPIX).then(
+                binaryImage => {
+                  this._binaryImage = binaryImage;
+                  resolve();
+                }
+              );
+            }
           }
-        });
+        );
       };
       xhr.send();
     });
