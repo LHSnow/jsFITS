@@ -87,23 +87,21 @@ export class FITS extends LitElement {
   fetch() {
     const self = this;
     return new Promise(resolve => {
-      if (this.src.length) {
-        self._binaryImage = null;
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', this.src, true);
-        xhr.responseType = 'blob';
+      self._binaryImage = null;
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', this.src, true);
+      xhr.responseType = 'blob';
 
-        xhr.onload = () => {
-          self.readFITSHeader(xhr.response).then(headerOffset => {
-            if (self._header.NAXIS >= 2) {
-              self.readFITSImage(xhr.response, headerOffset).then(() => {
-                resolve();
-              });
-            }
-          });
-        };
-        xhr.send();
-      }
+      xhr.onload = () => {
+        self.readFITSHeader(xhr.response).then(headerOffset => {
+          if (self._header.NAXIS >= 2) {
+            self.readFITSImage(xhr.response, headerOffset).then(() => {
+              resolve();
+            });
+          }
+        });
+      };
+      xhr.send();
     });
   }
 
@@ -237,7 +235,7 @@ export class FITS extends LitElement {
 }
 
 FITS.properties = {
-  src: { type: String, reflect: true },
+  src: { type: String },
   stretch: { type: String, reflect: true },
   colormap: { type: String, reflect: true },
   width: { type: Number },
