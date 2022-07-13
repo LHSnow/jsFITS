@@ -1,27 +1,89 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-GB">
-<head>
-  <meta charset="utf-8">
-  <style>
-    body {
-      background: #fafafa;
-    }
-  </style>
-</head>
-<body>
-  <div id="demo"></div>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      fits-demo {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import { html, LitElement } from 'lit';
+      import '../fits-img.js';
 
-  <script type="module">
-    import { html, render } from 'lit';
-    import '../fits-img.js';
+      export class FITSDemo extends LitElement {
+        static properties = {
+          _src: { type: String },
+          _stretch: { type: String },
+          _colormap: { type: String },
+          _scaleCutoff: { type: Number },
+        };
 
-    const src = '2022-03-03T19.27.15E.replaced.fits';
-    render(
-      html`
-        <fits-img .src=${src}></fits-img>
-      `,
-      document.querySelector('#demo')
-    );
-  </script>
-</body>
+        constructor() {
+          super();
+          this._src = '/2022-03-03T19.27.15E.replaced.fits';
+          this._stretch = 'linear';
+          this._colormap = 'gray';
+          this._scaleCutoff = 0.999;
+        }
+
+        _changeStretch(event) {
+          this._stretch = event.target.value;
+        }
+
+        _changeColormap(event) {
+          this._colormap = event.target.value;
+        }
+
+        _changeScaleCutoff(event) {
+          this._scaleCutoff = event.target.value;
+        }
+
+        render() {
+          return html` <fits-img
+              src=${this._src}
+              stretch=${this._stretch}
+              colormap=${this._colormap}
+              scale-cutoff="${this._scaleCutoff}"
+            ></fits-img>
+            <label
+              >Stretch
+              <select @change="${this._changeStretch}">
+                <option>linear</option>
+                <option>sqrt</option>
+                <option>cuberoot</option>
+                <option>log</option>
+                <option>sqrtlog</option>
+                <option>loglog</option>
+              </select></label
+            >
+            <label
+              >Colormap
+              <select @change="${this._changeColormap}">
+                <option>gray</option>
+                <option>heat</option>
+                <option>A</option>
+                <option>B</option>
+              </select></label
+            >
+            <label
+              >Scale cutoff
+              <input
+                type="number"
+                @change="${this._changeScaleCutoff}"
+                value="${this._scaleCutoff}"
+                step="0.001"
+                min="0"
+                max="1"
+              />
+            </label>`;
+        }
+      }
+      customElements.define('fits-demo', FITSDemo);
+    </script>
+    <fits-demo></fits-demo>
+  </body>
 </html>

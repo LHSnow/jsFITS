@@ -34,7 +34,7 @@ export class FITS extends LitElement {
     super();
     this.src = '';
     this.stretch = 'linear';
-    this.color = 'gray';
+    this.colormap = 'gray';
     this.width = 0;
     this.height = 0;
     this.z = 0;
@@ -68,15 +68,16 @@ export class FITS extends LitElement {
       this.fetch().then(() => {
         if (!this._rgbImage && this._ctx) {
           this._rgbImage = this._ctx.createImageData(this.width, this.height);
+          this.draw();
         }
-        this.draw();
       });
+    } else {
+      this.draw();
     }
   }
 
   render() {
     return html`<canvas
-      id="canvas"
       width="${this.width}"
       height="${this.height}"
     ></canvas>`;
@@ -183,7 +184,7 @@ export class FITS extends LitElement {
   }
 
   firstUpdated() {
-    this._canvas = this.renderRoot.querySelector('#canvas');
+    this._canvas = this.renderRoot.querySelector('canvas');
     if (this._canvas) {
       this._ctx = this._canvas.getContext('2d');
       this.draw();
@@ -222,7 +223,7 @@ export class FITS extends LitElement {
     for (let row = 0; row < this.height; row += 1) {
       for (let col = 0; col < this.width; col += 1) {
         const pos = ((this.height - row) * this.width + col) * 4;
-        const rgb = this._colormaps[this.color](image[index]);
+        const rgb = this._colormaps[this.colormap](image[index]);
         this._rgbImage.data[pos] = rgb.r;
         this._rgbImage.data[pos + 1] = rgb.g;
         this._rgbImage.data[pos + 2] = rgb.b;
@@ -236,11 +237,15 @@ export class FITS extends LitElement {
 }
 
 FITS.properties = {
-  src: { type: String },
-  stretch: { type: String },
-  color: { type: String },
+  src: { type: String, reflect: true },
+  stretch: { type: String, reflect: true },
+  colormap: { type: String, reflect: true },
   width: { type: Number },
   height: { type: Number },
   z: { type: Number },
-  scaleCutoff: { type: Number },
+  scaleCutoff: {
+    type: Number,
+    attribute: 'scale-cutoff',
+    reflect: true,
+  },
 };
