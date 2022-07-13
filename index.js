@@ -1,1 +1,1 @@
-export { FITS } from './fits.js';
+export { FITS } from './src/fits.js';

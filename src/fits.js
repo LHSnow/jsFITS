@@ -14,20 +14,15 @@ import {
   stretchLoglog,
   stretchSqrt,
   stretchSqrtlog,
-} from './src/stretch.js';
+} from './stretch.js';
 import {
   colormapA,
   colormapB,
   colormapGray,
   colormapHeat,
-} from './src/colormap.js';
-import {
-  isBoolean,
-  isDate,
-  isFloat,
-  isString,
-} from './src/parse-fits-header.js';
-import { swap16, systemBigEndian } from './src/endian.js';
+} from './colormap.js';
+import { isBoolean, isDate, isFloat, isString } from './parse-fits-header.js';
+import { swap16, systemBigEndian } from './endian.js';
 
 export class FITS extends LitElement {
   constructor() {
