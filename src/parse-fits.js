@@ -87,22 +87,17 @@ export function readFITSHeader(blob) {
 }
 
 export function readFITSImage(blob, headerOffset, bitpix) {
-  let binaryImage;
   return blob
     .slice(headerOffset)
     .arrayBuffer()
     .then(buf => {
-      switch (bitpix) {
-        case 16:
-          binaryImage = new Uint16Array(buf);
-          if (!systemBigEndian()) {
-            binaryImage = binaryImage.map(swap16);
-          }
-          return binaryImage;
-        case -32:
-          return new Float32Array(buf);
-        default:
-          return new Uint8Array(0);
+      if (bitpix === 16) {
+        let binaryImage = new Uint16Array(buf);
+        if (!systemBigEndian()) {
+          binaryImage = binaryImage.map(swap16);
+        }
+        return binaryImage;
       }
+      throw Error('Only supports Uint16 encoding (TODO: allow other BITPIX)');
     });
 }
