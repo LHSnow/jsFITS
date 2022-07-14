@@ -5,7 +5,7 @@
     <style>
       fits-demo {
         display: flex;
-        flex-direction: column;
+          flex-wrap: wrap;
       }
     </style>
   </head>
@@ -27,6 +27,9 @@
           this._stretch = 'linear';
           this._colormap = 'gray';
           this._scaleCutoff = 0.999;
+          this._minutes = Array.from({length: 38}, (x, i) => {
+              return i + 22;
+            });
         }
 
         _changeStretch(event) {
@@ -42,12 +45,18 @@
         }
 
         render() {
-          return html` <fits-img
-              src="/2022-03-03T19.27.15E.replaced.fits"
-              stretch=${this._stretch}
-              colormap=${this._colormap}
-              scale-cutoff="${this._scaleCutoff}"
-            ></fits-img>
+          const images = this._minutes.map(
+            minute =>
+              html`<fits-img
+                src="/files/2022-03-03T19.${minute}.15E.replaced.fits"
+                stretch=${this._stretch}
+                colormap=${this._colormap}
+                scale-cutoff="${this._scaleCutoff}"
+              ></fits-img>`
+          );
+
+          return html`
+            <div>
             <label
               >Stretch
               <select @change="${this._changeStretch}">
@@ -78,7 +87,7 @@
                 min="0"
                 max="1"
               />
-            </label>`;
+            </label></div>${images}`;
         }
       }
       customElements.define('fits-demo', FITSDemo);
