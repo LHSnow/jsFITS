@@ -82,31 +82,27 @@ export class FITS extends LitElement {
     const self = this;
     return new Promise(resolve => {
       self._binaryImage = null;
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', this.src, true);
-      xhr.responseType = 'blob';
+      let header;
+      let headerOffset;
+      let width;
+      let height;
+      let depth;
+      fetch(this.src)
+        .then(response => response.arrayBuffer())
+        .then(buf => {
+          [header, headerOffset, width, height, depth] = readFITSHeader(buf);
+          self._header = header;
+          self.height = height;
+          self.width = width;
+          self._depth = depth > 1 ? depth : 1;
+          console.log(header, headerOffset);
 
-      xhr.onload = () => {
-        readFITSHeader(xhr.response).then(
-          ([header, headerOffset, width, height, depth]) => {
-            self._header = header;
-            self.height = height;
-            self.width = width;
-            self._depth = depth > 1 ? depth : 1;
-            console.log(header, headerOffset);
-
-            if (header.NAXIS >= 2) {
-              readFITSImage(xhr.response, headerOffset, header.BITPIX).then(
-                binaryImage => {
-                  this._binaryImage = binaryImage;
-                  resolve();
-                }
-              );
-            }
+          if (header.NAXIS >= 2) {
+            console.log(buf);
+            this._binaryImage = readFITSImage(buf, headerOffset, header.BITPIX);
+            resolve();
           }
-        );
-      };
-      xhr.send();
+        });
     });
   }
 
@@ -120,7 +116,7 @@ export class FITS extends LitElement {
 
   // Calculate the pixel values using a defined stretch type and draw onto the canvas
   draw() {
-    if (!this._binaryImage || !this._ctx) return;
+    if (!this._binaryImage || !this._ctx || !this._rgbImage) return;
 
     const image = new Uint8ClampedArray(this.width * this.height);
     const frameStart = this.width * this.height * this.z;
@@ -137,17 +133,19 @@ export class FITS extends LitElement {
     }
     const range = max - min;
     console.log('min', min, 'max', max);
+    console.log('binary', this._binaryImage);
 
     let j = 0;
     for (let i = frameStart; i < frameEnd; i += 1, j += 1) {
       let val = this._stretchFunctions[this.stretch](frame[i], min, range);
       if (Number.isNaN(val)) val = 0;
       else if (val < 0) val = 0;
-      else if (val > 255) val = 255;
+      else if (val > 254) val = 254;
       image[j] = val;
     }
 
     index = 0;
+    console.log('rgb', this._rgbImage);
     for (let row = 0; row < this.height; row += 1) {
       for (let col = 0; col < this.width; col += 1) {
         const pos = ((this.height - row) * this.width + col) * 4;
@@ -159,7 +157,6 @@ export class FITS extends LitElement {
         index += 1;
       }
     }
-    console.log(this._rgbImage);
 
     this._ctx.putImageData(this._rgbImage, 0, 0);
   }
