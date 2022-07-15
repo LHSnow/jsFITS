@@ -5,7 +5,7 @@
     <style>
       fits-demo {
         display: flex;
-          flex-wrap: wrap;
+          flex-direction: column;
       }
     </style>
   </head>
@@ -27,7 +27,7 @@
           this._stretch = 'linear';
           this._colormap = 'gray';
           this._scaleCutoff = 0.999;
-          this._minutes = Array.from({length: 38}, (x, i) => {
+          this._minutes = Array.from({length: 5}, (x, i) => {
               return i + 22;
             });
         }
@@ -56,7 +56,6 @@
           );
 
           return html`
-            <div>
             <label
               >Stretch
               <select @change="${this._changeStretch}">
@@ -87,7 +86,7 @@
                 min="0"
                 max="1"
               />
-            </label></div>${images}`;
+            </label>${images}`;
         }
       }
       customElements.define('fits-demo', FITSDemo);
