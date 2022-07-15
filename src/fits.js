@@ -93,6 +93,7 @@ export class FITS extends LitElement {
             self.height = height;
             self.width = width;
             self._depth = depth > 1 ? depth : 1;
+            console.log(header, headerOffset);
 
             if (header.NAXIS >= 2) {
               readFITSImage(xhr.response, headerOffset, header.BITPIX).then(
@@ -135,6 +136,7 @@ export class FITS extends LitElement {
       min = sorted[(index += 1)];
     }
     const range = max - min;
+    console.log('min', min, 'max', max);
 
     let j = 0;
     for (let i = frameStart; i < frameEnd; i += 1, j += 1) {
@@ -157,6 +159,7 @@ export class FITS extends LitElement {
         index += 1;
       }
     }
+    console.log(this._rgbImage);
 
     this._ctx.putImageData(this._rgbImage, 0, 0);
   }

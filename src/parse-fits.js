@@ -92,10 +92,12 @@ export function readFITSImage(blob, headerOffset, bitpix) {
     .arrayBuffer()
     .then(buf => {
       if (bitpix === 16) {
+        console.log(buf);
         let binaryImage = new Uint16Array(buf);
         if (!systemBigEndian()) {
           binaryImage = binaryImage.map(swap16);
         }
+        console.log(binaryImage);
         return binaryImage;
       }
       throw Error('Only supports Uint16 encoding (TODO: allow other BITPIX)');
