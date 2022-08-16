@@ -27,8 +27,8 @@
           this._stretch = 'linear';
           this._colormap = 'gray';
           this._scaleCutoff = 0.999;
-          this._minutes = Array.from({length: 5}, (x, i) => {
-              return i + 42;
+          this._minutes = Array.from({length: 38}, (x, i) => {
+              return i + 22;
             });
         }
 
@@ -86,7 +86,7 @@
                 min="0"
                 max="1"
               />
-            </label>${images}`;
+            </label><div style="display: flex; flex-wrap: wrap">${images}</div>`;
         }
       }
       customElements.define('fits-demo', FITSDemo);
