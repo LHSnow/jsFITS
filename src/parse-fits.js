@@ -23,10 +23,11 @@ export function readFITSHeader(buffer) {
   let height;
   let depth;
   const headerUnitChars = 80;
+  const fitsHeaderByteMultiples = 2880;
 
   while (iOffset < iLength) {
-    const slice = buffer.slice(iOffset, iOffset + headerUnitChars);
-    const headerUnit = String.fromCharCode.apply(null, new Uint8Array(slice));
+    const line = buffer.slice(iOffset, iOffset + headerUnitChars);
+    const headerUnit = String.fromCharCode.apply(null, new Uint8Array(line));
     if (headerUnit.startsWith('END')) break;
 
     const hdu = headerUnit.split(/[=/]/);
@@ -63,8 +64,7 @@ export function readFITSHeader(buffer) {
     if (typeof header.NAXIS2 === 'number') height = header.NAXIS2;
   }
 
-  // FITS headers are in multiples of 2880 bytes
-  iOffset += 2880 - (iOffset % 2880);
+  iOffset += fitsHeaderByteMultiples - (iOffset % fitsHeaderByteMultiples);
 
   return [header, iOffset, width, height, depth];
 }
@@ -72,18 +72,15 @@ export function readFITSHeader(buffer) {
 export function readFITSImage(buf, headerOffset, bitpix) {
   let databytes;
   let binaryImage;
-  let dataview;
-  console.log(headerOffset);
+  let dataView;
+
   if (bitpix === 16) {
     databytes = 2;
-    binaryImage = new Uint16Array(buf, headerOffset);
-    dataview = new DataView(buf, headerOffset);
+    dataView = new DataView(buf, headerOffset);
+    binaryImage = new Uint16Array(dataView.byteLength / databytes);
 
     for (let i = 0; i < binaryImage.length; i += 1) {
-      binaryImage[i] = dataview.getInt16(i * databytes);
-      if (i < 5) {
-        console.log(binaryImage[i].toString(16));
-      }
+      binaryImage[i] = dataView.getUint16(i * databytes);
     }
     return binaryImage;
   }

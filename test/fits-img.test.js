@@ -4,26 +4,26 @@ import { fixture, expect } from '@open-wc/testing';
 import '../fits-img.js';
 
 describe('FitsImg', () => {
-  it('has a default title "Hey there" and counter 5', async () => {
+  it('has default values for attributes', async () => {
     const el = await fixture(html`<fits-img></fits-img>`);
 
-    expect(el.title).to.equal('Hey there');
-    expect(el.counter).to.equal(5);
+    expect(el.scaleCutoff).to.equal(0.999);
+    expect(el.stretch).to.equal('linear');
+    expect(el.colormap).to.equal('gray');
   });
 
-  it('increases the counter on button click', async () => {
-    const el = await fixture(html`<fits-img></fits-img>`);
-    el.shadowRoot.querySelector('button').click();
-
-    expect(el.counter).to.equal(6);
-  });
-
-  it('can override the title via attribute', async () => {
+  it('can override defaults with attributes', async () => {
     const el = await fixture(
-      html`<fits-img title="attribute title"></fits-img>`
+      html`<fits-img
+        scale-cutoff="0.998"
+        stretch="sqrt"
+        colormap="heat"
+      ></fits-img>`
     );
 
-    expect(el.title).to.equal('attribute title');
+    expect(el.scaleCutoff).to.equal(0.998);
+    expect(el.stretch).to.equal('sqrt');
+    expect(el.colormap).to.equal('heat');
   });
 
   it('passes the a11y audit', async () => {

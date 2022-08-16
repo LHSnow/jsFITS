@@ -34,7 +34,7 @@ export class FITS extends LitElement {
     this.z = 0;
     this.scaleCutoff = 0.999;
     this._binaryImage = null;
-    this._depth = 1;
+    this._frames = 1;
     this._header = {};
     this._canvas = null;
     this._ctx = null;
@@ -80,25 +80,26 @@ export class FITS extends LitElement {
   // Loads the FITS file using an ajax request
   fetch() {
     const self = this;
+
     return new Promise(resolve => {
       self._binaryImage = null;
       let header;
       let headerOffset;
       let width;
       let height;
-      let depth;
-      fetch(this.src)
+      let frames;
+      fetch(this.src, {
+        headers: { 'Content-Type': 'application/octet-stream' },
+      })
         .then(response => response.arrayBuffer())
         .then(buf => {
-          [header, headerOffset, width, height, depth] = readFITSHeader(buf);
+          [header, headerOffset, width, height, frames] = readFITSHeader(buf);
           self._header = header;
           self.height = height;
           self.width = width;
-          self._depth = depth > 1 ? depth : 1;
-          console.log(header, headerOffset);
+          self._frames = frames > 1 ? frames : 1;
 
           if (header.NAXIS >= 2) {
-            console.log(buf);
             this._binaryImage = readFITSImage(buf, headerOffset, header.BITPIX);
             resolve();
           }
@@ -132,8 +133,6 @@ export class FITS extends LitElement {
       min = sorted[(index += 1)];
     }
     const range = max - min;
-    console.log('min', min, 'max', max);
-    console.log('binary', this._binaryImage);
 
     let j = 0;
     for (let i = frameStart; i < frameEnd; i += 1, j += 1) {
@@ -145,7 +144,6 @@ export class FITS extends LitElement {
     }
 
     index = 0;
-    console.log('rgb', this._rgbImage);
     for (let row = 0; row < this.height; row += 1) {
       for (let col = 0; col < this.width; col += 1) {
         const pos = ((this.height - row) * this.width + col) * 4;

@@ -2,3 +2,4 @@
 *.png
 .idea
 node_modules
+coverage/
