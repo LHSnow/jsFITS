@@ -1,4 +1,5 @@
 // import { hmrPlugin, presets } from '@open-wc/dev-server-hmr';
+import proxy from 'koa-proxies';
 
 /** Use Hot Module replacement by adding --hmr to the start command */
 const hmr = process.argv.includes('--hmr');
@@ -10,6 +11,14 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
   nodeResolve: {
     exportConditions: ['browser', 'development'],
   },
+
+  middleware: [
+    proxy('/files', {
+      target: 'http://dalek.umea.irf.se',
+      changeOrigin: true,
+      rewrite: path => path.replace('files', 'peje/shrink-fits/2022-03-03'),
+    }),
+  ],
 
   /** Compile JS for older browsers. Requires @web/dev-server-esbuild plugin */
   // esbuildTarget: 'auto'
