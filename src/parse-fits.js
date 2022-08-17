@@ -69,20 +69,18 @@ export function readFITSHeader(buffer) {
   return [header, iOffset, width, height, depth];
 }
 
-export function readFITSImage(buf, headerOffset, bitpix) {
-  let databytes;
-  let binaryImage;
-  let dataView;
+export function readFITSImage(buffer, headerOffset, bitpixHeader) {
+  const datatype = bitpixHeader > 0 ? 'Uint' : 'Float';
+  const dataBits = Math.abs(bitpixHeader);
+  const dataBytes = dataBits / 8;
+  const dataView = new DataView(buffer, headerOffset);
+  // the window object contains the constructors for Uint16Array and other global classes
+  const imageData = new window[`${datatype}${dataBits}Array`](
+    dataView.byteLength / dataBytes
+  );
 
-  if (bitpix === 16) {
-    databytes = 2;
-    dataView = new DataView(buf, headerOffset);
-    binaryImage = new Uint16Array(dataView.byteLength / databytes);
-
-    for (let i = 0; i < binaryImage.length; i += 1) {
-      binaryImage[i] = dataView.getUint16(i * databytes);
-    }
-    return binaryImage;
+  for (let i = 0; i < imageData.length; i += 1) {
+    imageData[i] = dataView[`get${datatype}${dataBits}`](i * dataBytes);
   }
-  throw Error('Only supports Uint16 encoding (TODO: allow other BITPIX)');
+  return imageData;
 }
