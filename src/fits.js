@@ -33,7 +33,7 @@ export class FITS extends LitElement {
     this.height = 0;
     this.z = 0;
     this.scaleCutoff = 0.999;
-    this._binaryImage = null;
+    this._rawImageData = null;
     this._frames = 1;
     this._header = {};
     this._canvas = null;
@@ -77,12 +77,11 @@ export class FITS extends LitElement {
     ></canvas>`;
   }
 
-  // Loads the FITS file using an ajax request
   fetch() {
     const self = this;
 
     return new Promise(resolve => {
-      self._binaryImage = null;
+      self._rawImageData = null;
       let header;
       let headerOffset;
       let width;
@@ -100,7 +99,11 @@ export class FITS extends LitElement {
           self._frames = frames > 1 ? frames : 1;
 
           if (header.NAXIS >= 2) {
-            this._binaryImage = readFITSImage(buf, headerOffset, header.BITPIX);
+            this._rawImageData = readFITSImage(
+              buf,
+              headerOffset,
+              header.BITPIX
+            );
             resolve();
           }
         });
@@ -117,19 +120,19 @@ export class FITS extends LitElement {
 
   // Calculate the pixel values using a defined stretch type and draw onto the canvas
   draw() {
-    if (!this._binaryImage || !this._ctx || !this._rgbImage) return;
+    if (!this._rawImageData || !this._ctx || !this._rgbImage) return;
 
-    const image = new Uint8ClampedArray(this.width * this.height);
+    const tmpImageData = new Uint8ClampedArray(this.width * this.height);
     const frameStart = this.width * this.height * this.z;
     let min = 0;
-    const frameEnd = frameStart + image.length;
+    const frameEnd = frameStart + tmpImageData.length;
     let index = 0;
 
-    const frame = this._binaryImage.slice(frameStart, frameEnd);
+    const frame = this._rawImageData.slice(frameStart, frameEnd);
     const sorted = frame.slice().sort();
-    const maxPercentile = Math.ceil(image.length * this.scaleCutoff);
+    const maxPercentile = Math.ceil(tmpImageData.length * this.scaleCutoff);
     const max = sorted[maxPercentile];
-    while (min === 0 && index < image.length) {
+    while (min === 0 && index < tmpImageData.length) {
       min = sorted[(index += 1)];
     }
     const range = max - min;
@@ -140,14 +143,14 @@ export class FITS extends LitElement {
       if (Number.isNaN(val)) val = 0;
       else if (val < 0) val = 0;
       else if (val > 254) val = 254;
-      image[j] = val;
+      tmpImageData[j] = val;
     }
 
     index = 0;
     for (let row = 0; row < this.height; row += 1) {
       for (let col = 0; col < this.width; col += 1) {
         const pos = ((this.height - row) * this.width + col) * 4;
-        const rgb = this._colormaps[this.colormap](image[index]);
+        const rgb = this._colormaps[this.colormap](tmpImageData[index]);
         this._rgbImage.data[pos] = rgb.r;
         this._rgbImage.data[pos + 1] = rgb.g;
         this._rgbImage.data[pos + 2] = rgb.b;

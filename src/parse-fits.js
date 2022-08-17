@@ -75,12 +75,12 @@ export function readFITSImage(buffer, headerOffset, bitpixHeader) {
   const dataBytes = dataBits / 8;
   const dataView = new DataView(buffer, headerOffset);
   // the window object contains the constructors for Uint16Array and other global classes
-  const imageData = new window[`${datatype}${dataBits}Array`](
+  const rawImageData = new window[`${datatype}${dataBits}Array`](
     dataView.byteLength / dataBytes
   );
 
-  for (let i = 0; i < imageData.length; i += 1) {
-    imageData[i] = dataView[`get${datatype}${dataBits}`](i * dataBytes);
+  for (let i = 0; i < rawImageData.length; i += 1) {
+    rawImageData[i] = dataView[`get${datatype}${dataBits}`](i * dataBytes);
   }
-  return imageData;
+  return rawImageData;
 }
