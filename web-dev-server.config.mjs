@@ -16,7 +16,18 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
     proxy('/files', {
       target: 'http://dalek.umea.irf.se',
       changeOrigin: true,
+      logs: true,
       rewrite: path => path.replace('files', 'peje/shrink-fits/2022-03-03'),
+      events: {
+        error (err, req, res) {
+          console.log(err)
+        },
+        proxyRes (proxyRes, req, res) {
+          // binary parsing does not work properly without Content-Type header set
+          // as it defaults to parsing as utf-8
+          res.setHeader('Content-Type', 'application/octet-stream')
+        }
+      }
     }),
   ],
 
