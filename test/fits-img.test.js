@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { fixture, expect } from '@open-wc/testing';
 
 import '../fits-img.js';
-import { extractKeogramSlice } from '../src/parse-fits.js';
+import { extractKeogramSlice, createKeogramFrom } from '../src/parse-fits.js';
 
 describe('FitsImg', () => {
   it('has default values for attributes', async () => {
@@ -45,5 +45,16 @@ describe('FitsImg', () => {
     const imageData = new Uint16Array([0, 1, 2, 3, 4, 5, 6, 7, 8]);
     const keogramSlice = extractKeogramSlice(imageData, 3);
     expect(keogramSlice.toString()).to.equal('1,4,7');
+  });
+
+  it('concatenates keogram slices into a keogram', () => {
+    const slices = [
+      new Uint16Array([0, 0, 0]),
+      new Uint16Array([1, 1, 1]),
+      new Uint16Array([2, 2, 2]),
+      new Uint16Array([3, 3, 3]),
+    ];
+    const keogram = createKeogramFrom(slices);
+    expect(keogram.toString()).to.equal('0,1,2,3,0,1,2,3,0,1,2,3');
   });
 });

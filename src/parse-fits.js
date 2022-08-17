@@ -89,3 +89,17 @@ export function extractKeogramSlice(rawImageData, imgWidth) {
   const center = Math.floor(imgWidth / 2);
   return rawImageData.filter((element, index) => index % imgWidth === center);
 }
+
+export function createKeogramFrom(slices) {
+  const width = slices.length;
+  const height = slices[0].length;
+  const rawKeogram = new slices[0].constructor(width * height);
+  let index = 0;
+  for (let i = 0; i < height; i += 1) {
+    for (let j = 0; j < width; j += 1) {
+      rawKeogram[index] = slices[j][i];
+      index += 1;
+    }
+  }
+  return rawKeogram;
+}
