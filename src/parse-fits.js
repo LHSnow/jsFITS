@@ -84,3 +84,8 @@ export function readFITSImage(buffer, headerOffset, bitpixHeader) {
   }
   return rawImageData;
 }
+
+export function extractKeogramSlice(rawImageData, imgWidth) {
+  const center = Math.floor(imgWidth / 2);
+  return rawImageData.filter((element, index) => index % imgWidth === center);
+}
