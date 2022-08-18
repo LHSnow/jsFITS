@@ -8,6 +8,12 @@
 
 import { html, LitElement } from 'lit';
 import {
+  colormapA,
+  colormapB,
+  colormapGray,
+  colormapHeat,
+} from './colormap.js';
+import {
   stretchCuberoot,
   stretchLinear,
   stretchLog,
@@ -15,34 +21,39 @@ import {
   stretchSqrt,
   stretchSqrtlog,
 } from './stretch.js';
-import {
-  colormapA,
-  colormapB,
-  colormapGray,
-  colormapHeat,
-} from './colormap.js';
-import {
-  extractKeogramSlice,
-  readFITSHeader,
-  readFITSImage,
-} from './parse-fits.js';
 
-export class FITS extends LitElement {
+export function createKeogramFrom(slices) {
+  const width = slices.length;
+  const height = slices[0].length;
+  const rawKeogram = new slices[0].constructor(width * height);
+  for (let i = 0; i < width; i += 1) {
+    for (let j = 0; j < height; j += 1) {
+      rawKeogram[j * width + i] = slices[i][j];
+    }
+  }
+  return rawKeogram;
+}
+
+export class Keogram extends LitElement {
   constructor() {
     super();
-    this.src = '';
+    this._rawImageData = null;
+    this._canvas = null;
+    this._ctx = null;
+    this._rgbImage = null;
     this.stretch = 'linear';
     this.colormap = 'gray';
     this.width = 0;
     this.height = 0;
     this.frame = 0;
     this.scaleCutoff = 0.999;
-    this._rawImageData = null;
-    this._frames = 1;
-    this._header = {};
-    this._canvas = null;
-    this._ctx = null;
-    this._rgbImage = null;
+    this._colormaps = {
+      blackbody: colormapHeat,
+      heat: colormapHeat,
+      A: colormapA,
+      B: colormapB,
+      gray: colormapGray,
+    };
     this._stretchFunctions = {
       linear: stretchLinear,
       sqrt: stretchSqrt,
@@ -51,69 +62,22 @@ export class FITS extends LitElement {
       loglog: stretchLoglog,
       sqrtlog: stretchSqrtlog,
     };
-    // Colour scales defined by SAOImage
-    this._colormaps = {
-      blackbody: colormapHeat,
-      heat: colormapHeat,
-      A: colormapA,
-      B: colormapB,
-      gray: colormapGray,
-    };
   }
 
-  willUpdate(changedProperties) {
-    if (changedProperties.has('src')) {
-      this.fetch().then(() => {
-        if (!this._rgbImage && this._ctx) {
-          this._rgbImage = this._ctx.createImageData(this.width, this.height);
-          this.draw();
-        }
-      });
-    } else {
+  async handleSlotchange(e) {
+    const children = e.target.assignedElements({ selector: 'fits-img' });
+
+    Promise.all(children.map(child => child.keogramSlice())).then(slices => {
+      this.width = slices.length;
+      this.height = slices[0].length;
+      this._rgbImage = this._ctx.createImageData(this.width, this.height);
+      this._rawImageData = createKeogramFrom(slices);
       this.draw();
-    }
-  }
-
-  render() {
-    return html`<canvas
-      width="${this.width}"
-      height="${this.height}"
-    ></canvas>`;
-  }
-
-  fetch() {
-    const self = this;
-
-    return new Promise(resolve => {
-      self._rawImageData = null;
-      let header;
-      let headerOffset;
-      let width;
-      let height;
-      let frames;
-      fetch(this.src, {
-        headers: { Accept: 'application/octet-stream' },
-      })
-        .then(response => response.arrayBuffer())
-        .then(buf => {
-          [header, headerOffset, width, height, frames] = readFITSHeader(buf);
-          self._header = header;
-          self.height = height;
-          self.width = width;
-          self._frames = frames > 1 ? frames : 1;
-
-          if (header.NAXIS >= 2) {
-            this._rawImageData = readFITSImage(
-              buf,
-              headerOffset,
-              header.BITPIX,
-              width,
-              height
-            );
-            resolve();
-          }
-        });
     });
+  }
+
+  willUpdate() {
+    this.draw();
   }
 
   firstUpdated() {
@@ -122,6 +86,11 @@ export class FITS extends LitElement {
       this._ctx = this._canvas.getContext('2d');
       this.draw();
     }
+  }
+
+  render() {
+    return html`<canvas width="${this.width}" height="${this.height}"></canvas>
+      <slot @slotchange=${this.handleSlotchange} hidden></slot> `;
   }
 
   // Calculate the pixel values using a defined stretch type and draw onto the canvas
@@ -167,24 +136,11 @@ export class FITS extends LitElement {
 
     this._ctx.putImageData(this._rgbImage, 0, 0);
   }
-
-  keogramSlice() {
-    if (this._rawImageData && this.width) {
-      return new Promise(extractKeogramSlice(this._rawImageData, this.width));
-    }
-    return this.fetch().then(() =>
-      extractKeogramSlice(this._rawImageData, this.width)
-    );
-  }
 }
 
-FITS.properties = {
-  src: { type: String },
+Keogram.properties = {
   stretch: { type: String, reflect: true },
   colormap: { type: String, reflect: true },
-  width: { type: Number },
-  height: { type: Number },
-  frame: { type: Number },
   scaleCutoff: {
     type: Number,
     attribute: 'scale-cutoff',

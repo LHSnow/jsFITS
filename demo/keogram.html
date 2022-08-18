@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <style>
+      fits-demo {
+          display: flex;
+          flex-direction: column;
+      }
+  </style>
+</head>
+<body>
+<script type="module">
+    import { html, LitElement } from 'lit';
+    import '../fits-img.js';
+    import '../fits-keogram.js';
+
+    export class FITSDemo extends LitElement {
+        static properties = {
+            _src: { type: String },
+            _stretch: { type: String },
+            _colormap: { type: String },
+            _scaleCutoff: { type: Number },
+        };
+
+        constructor() {
+            super();
+            this._stretch = 'linear';
+            this._colormap = 'gray';
+            this._scaleCutoff = 0.999;
+            const seconds = ['00', 20, 30, 40];
+            this._times = Array.from({ length: 37 }, (x, i) => {
+                const minute = i + 23;
+                return seconds.map(second => `${minute}.${second}`);
+            }).flat();
+        }
+
+        _changeStretch(event) {
+            this._stretch = event.target.value;
+        }
+
+        _changeColormap(event) {
+            this._colormap = event.target.value;
+        }
+
+        _changeScaleCutoff(event) {
+            this._scaleCutoff = event.target.value;
+        }
+
+        render() {
+            const images = this._times.map(
+                time =>
+                    html`<fits-img
+                src="/files/2022-03-03T19.${time}E.replaced.fits"
+              ></fits-img>`
+            );
+
+            return html`
+            <h1>&lt;fits-keogram&gt; interactive demo</h1>
+            <p>
+            <label
+              >Stretch
+              <select @change="${this._changeStretch}">
+                <option>linear</option>
+                <option>sqrt</option>
+                <option>cuberoot</option>
+                <option>log</option>
+                <option>sqrtlog</option>
+                <option>loglog</option>
+              </select></label
+            >
+            <label
+              >Colormap
+              <select @change="${this._changeColormap}">
+                <option>gray</option>
+                <option>heat</option>
+                <option>A</option>
+                <option>B</option>
+              </select></label
+            >
+            <label
+              >Scale cutoff
+              <input
+                type="number"
+                @change="${this._changeScaleCutoff}"
+                value="${this._scaleCutoff}"
+                step="0.001"
+                min="0"
+                max="1"
+              />
+            </label></p>
+            <div><fits-keogram stretch=${this._stretch}
+                colormap=${this._colormap}
+                scale-cutoff="${this._scaleCutoff}">${images}</fits-keogram></div>
+            `;
+        }
+    }
+    customElements.define('fits-demo', FITSDemo);
+</script>
+<fits-demo></fits-demo>
+</body>
+</html>

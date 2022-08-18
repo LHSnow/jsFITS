@@ -2,7 +2,8 @@ import { html } from 'lit';
 import { fixture, expect } from '@open-wc/testing';
 
 import '../fits-img.js';
-import { extractKeogramSlice, createKeogramFrom } from '../src/parse-fits.js';
+import { extractKeogramSlice } from '../src/parse-fits.js';
+import { createKeogramFrom } from '../src/keogram.js';
 
 describe('FitsImg', () => {
   it('has default values for attributes', async () => {
@@ -45,6 +46,12 @@ describe('FitsImg', () => {
     const imageData = new Uint16Array([0, 1, 2, 3, 4, 5, 6, 7, 8]);
     const keogramSlice = extractKeogramSlice(imageData, 3);
     expect(keogramSlice.toString()).to.equal('1,4,7');
+  });
+
+  it('a keogram slice is a multiple of the image height', () => {
+    const imageData = new Uint16Array(256 * 256);
+    const keogramSlice = extractKeogramSlice(imageData, 256);
+    expect(keogramSlice.length).to.equal(256);
   });
 
   it('concatenates keogram slices into a keogram', () => {

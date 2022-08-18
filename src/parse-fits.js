@@ -69,17 +69,22 @@ export function readFITSHeader(buffer) {
   return [header, iOffset, width, height, depth];
 }
 
-export function readFITSImage(buffer, headerOffset, bitpixHeader) {
+export function readFITSImage(
+  buffer,
+  headerOffset,
+  bitpixHeader,
+  width,
+  height
+) {
   const datatype = bitpixHeader > 0 ? 'Uint' : 'Float';
   const dataBits = Math.abs(bitpixHeader);
   const dataBytes = dataBits / 8;
+  const pixels = width * height;
   const dataView = new DataView(buffer, headerOffset);
   // the window object contains the constructors for Uint16Array and other global classes
-  const rawImageData = new window[`${datatype}${dataBits}Array`](
-    dataView.byteLength / dataBytes
-  );
+  const rawImageData = new window[`${datatype}${dataBits}Array`](pixels);
 
-  for (let i = 0; i < rawImageData.length; i += 1) {
+  for (let i = 0; i < pixels; i += 1) {
     rawImageData[i] = dataView[`get${datatype}${dataBits}`](i * dataBytes);
   }
   return rawImageData;
@@ -88,18 +93,4 @@ export function readFITSImage(buffer, headerOffset, bitpixHeader) {
 export function extractKeogramSlice(rawImageData, imgWidth) {
   const center = Math.floor(imgWidth / 2);
   return rawImageData.filter((element, index) => index % imgWidth === center);
-}
-
-export function createKeogramFrom(slices) {
-  const width = slices.length;
-  const height = slices[0].length;
-  const rawKeogram = new slices[0].constructor(width * height);
-  let index = 0;
-  for (let i = 0; i < height; i += 1) {
-    for (let j = 0; j < width; j += 1) {
-      rawKeogram[index] = slices[j][i];
-      index += 1;
-    }
-  }
-  return rawKeogram;
 }
