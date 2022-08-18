@@ -88,7 +88,7 @@ export class FITS extends LitElement {
       let height;
       let frames;
       fetch(this.src, {
-        headers: { 'Content-Type': 'application/octet-stream' },
+        headers: { Accept: 'application/octet-stream' },
       })
         .then(response => response.arrayBuffer())
         .then(buf => {
