@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { fixture, expect } from '@open-wc/testing';
 
 import '../fits-img.js';
-import { extractKeogramSlice } from '../src/parse-fits.js';
+import { extractKeogramSlice } from '../src/fits-parser.js';
 import { createKeogramFrom } from '../src/keogram.js';
 
 describe('FitsImg', () => {
