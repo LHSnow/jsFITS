@@ -22,11 +22,10 @@ export class Keogram extends FITSCanvas {
       this.height = slices[0].length;
       this._rgbImage = this._ctx.createImageData(this.width, this.height);
       this._rawImageData = createKeogramFrom(slices);
-      this.draw();
     });
   }
 
-  willUpdate() {
+  updated() {
     this.draw();
   }
 
