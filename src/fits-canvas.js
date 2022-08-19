@@ -58,7 +58,8 @@ export class FITSCanvas extends LitElement {
 
   // Calculate the pixel values using a defined stretch type and draw onto the canvas
   draw() {
-    if (!this._rawImageData || !this._ctx || !this._rgbImage) return;
+    const hidden = this._canvas?.offsetParent === null;
+    if (hidden || !this._rawImageData || !this._ctx || !this._rgbImage) return;
 
     const tmpImageData = new Uint8ClampedArray(this.width * this.height);
     const frameStart = this.width * this.height * this.frame;
