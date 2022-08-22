@@ -18,6 +18,7 @@ export class Keogram extends FITSCanvas {
   constructor() {
     super();
     this._images = null;
+    this.wavelength = null;
   }
 
   handleSlotchange(e) {
@@ -31,14 +32,22 @@ export class Keogram extends FITSCanvas {
 
   updated() {
     if (this._images) {
-      this.width = this._images.length;
-      this.height = this._images[0].height;
-      this._rgbImage = this._ctx.createImageData(this.width, this.height);
-      const slices = this._images.map(image =>
-        extractKeogramSlice(image._rawImageData, this._images[0].width)
-      );
-      this._rawImageData = createKeogramFrom(slices);
-      this.draw();
+      const slices = this._images
+        .filter(
+          image =>
+            !this.wavelength ||
+            image.header.FPSFCW.toString() === this.wavelength.toString()
+        )
+        .map(image =>
+          extractKeogramSlice(image._rawImageData, this._images[0].width)
+        );
+      if (slices.length) {
+        this.width = slices.length;
+        this.height = slices[0].length;
+        this._rgbImage = this._ctx.createImageData(this.width, this.height);
+        this._rawImageData = createKeogramFrom(slices);
+        this.draw();
+      }
     }
   }
 
@@ -47,3 +56,8 @@ export class Keogram extends FITSCanvas {
       <slot @slotchange=${this.handleSlotchange} hidden></slot> `;
   }
 }
+
+Keogram.properties = {
+  ...Keogram.properties,
+  wavelength: { type: String, reflect: true },
+};

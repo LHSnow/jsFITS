@@ -26,7 +26,6 @@ export class FITSCanvas extends LitElement {
     this.scaleCutoff = 0.999;
     this._rawImageData = null;
     this._frames = 1;
-    this.header = {};
     this._canvas = null;
     this._ctx = null;
     this._rgbImage = null;

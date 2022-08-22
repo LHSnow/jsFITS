@@ -3,6 +3,11 @@ import { readFITSHeader, readFITSImage } from './fits-parser.js';
 import { FITSCanvas } from './fits-canvas.js';
 
 export class FITS extends FITSCanvas {
+  constructor() {
+    super();
+    this.header = {};
+  }
+
   willUpdate(changedProperties) {
     if (changedProperties.has('src')) {
       this._fetch().then(() => {
