@@ -1,5 +1,6 @@
 import { html } from 'lit';
 import { FITSCanvas } from './fits-canvas.js';
+import { extractKeogramSlice } from './fits-parser.js';
 
 export function createKeogramFrom(slices) {
   const width = slices.length;
@@ -14,19 +15,31 @@ export function createKeogramFrom(slices) {
 }
 
 export class Keogram extends FITSCanvas {
-  handleSlotchange(e) {
-    const children = e.target.assignedElements({ selector: 'fits-img' });
+  constructor() {
+    super();
+    this._images = null;
+  }
 
-    Promise.all(children.map(child => child.keogramSlice())).then(slices => {
-      this.width = slices.length;
-      this.height = slices[0].length;
-      this._rgbImage = this._ctx.createImageData(this.width, this.height);
-      this._rawImageData = createKeogramFrom(slices);
+  handleSlotchange(e) {
+    const elements = e.target.assignedElements({ selector: 'fits-img' });
+
+    Promise.all(elements.map(fitsImg => fitsImg.ready)).then(() => {
+      this._images = elements;
+      this.requestUpdate();
     });
   }
 
   updated() {
-    this.draw();
+    if (this._images) {
+      this.width = this._images.length;
+      this.height = this._images[0].height;
+      this._rgbImage = this._ctx.createImageData(this.width, this.height);
+      const slices = this._images.map(image =>
+        extractKeogramSlice(image._rawImageData, this._images[0].width)
+      );
+      this._rawImageData = createKeogramFrom(slices);
+      this.draw();
+    }
   }
 
   render() {
