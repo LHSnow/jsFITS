@@ -19,9 +19,6 @@ export function parseFITSHeader(buffer) {
   const iLength = buffer.byteLength;
   let iOffset = 0;
   const header = {};
-  let width;
-  let height;
-  let depth;
   const headerUnitChars = 80;
   const fitsHeaderByteMultiples = 2880;
 
@@ -55,18 +52,9 @@ export function parseFITSHeader(buffer) {
   if (typeof header.BSCALE === 'undefined') header.BSCALE = 1;
   if (typeof header.BZERO === 'undefined') header.BZERO = 0;
 
-  if (header.NAXIS > 2 && typeof header.NAXIS3 === 'number') {
-    depth = header.NAXIS3;
-  }
-
-  if (header.NAXIS >= 2) {
-    if (typeof header.NAXIS1 === 'number') width = header.NAXIS1;
-    if (typeof header.NAXIS2 === 'number') height = header.NAXIS2;
-  }
-
   iOffset += fitsHeaderByteMultiples - (iOffset % fitsHeaderByteMultiples);
 
-  return [header, iOffset, width, height, depth];
+  return [header, iOffset];
 }
 
 export function parseFITSImage(

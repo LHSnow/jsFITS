@@ -28,30 +28,32 @@ export class FITS extends FITSCanvas {
 
     this.ready = new Promise(resolve => {
       self._rawImageData = null;
-      let header;
-      let headerOffset;
-      let width;
-      let height;
-      let frames;
       fetch(this.src, {
         headers: { Accept: 'application/octet-stream' },
       })
         .then(response => response.arrayBuffer())
         .then(buf => {
-          [header, headerOffset, width, height, frames] = parseFITSHeader(buf);
+          const [header, headerOffset] = parseFITSHeader(buf);
+
+          if (header.NAXIS > 2 && typeof header.NAXIS3 === 'number') {
+            self._frames = header.NAXIS3 > 1 ? header.NAXIS3 : 1;
+          }
+
+          if (header.NAXIS >= 2) {
+            if (typeof header.NAXIS1 === 'number') self.width = header.NAXIS1;
+            if (typeof header.NAXIS2 === 'number') self.height = header.NAXIS2;
+          }
+
           self.header = header;
           Object.freeze(self.header);
-          self.height = height;
-          self.width = width;
-          self._frames = frames > 1 ? frames : 1;
 
           if (header.NAXIS >= 2) {
             this._rawImageData = parseFITSImage(
               buf,
               headerOffset,
               header.BITPIX,
-              width,
-              height
+              self.width,
+              self.height
             );
             resolve();
           }
