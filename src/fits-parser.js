@@ -15,7 +15,7 @@ function isFloat(val) {
 }
 
 // Returns header as object, headerOffset as number (start of data, or end of file)
-export function readFITSHeader(buffer) {
+export function parseFITSHeader(buffer) {
   const iLength = buffer.byteLength;
   let iOffset = 0;
   const header = {};
@@ -69,7 +69,7 @@ export function readFITSHeader(buffer) {
   return [header, iOffset, width, height, depth];
 }
 
-export function readFITSImage(
+export function parseFITSImage(
   buffer,
   headerOffset,
   bitpixHeader,

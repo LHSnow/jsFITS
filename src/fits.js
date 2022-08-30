@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import { readFITSHeader, readFITSImage } from './fits-parser.js';
+import { parseFITSHeader, parseFITSImage } from './fits-parser.js';
 import { FITSCanvas } from './fits-canvas.js';
 
 export class FITS extends FITSCanvas {
@@ -38,7 +38,7 @@ export class FITS extends FITSCanvas {
       })
         .then(response => response.arrayBuffer())
         .then(buf => {
-          [header, headerOffset, width, height, frames] = readFITSHeader(buf);
+          [header, headerOffset, width, height, frames] = parseFITSHeader(buf);
           self.header = header;
           Object.freeze(self.header);
           self.height = height;
@@ -46,7 +46,7 @@ export class FITS extends FITSCanvas {
           self._frames = frames > 1 ? frames : 1;
 
           if (header.NAXIS >= 2) {
-            this._rawImageData = readFITSImage(
+            this._rawImageData = parseFITSImage(
               buf,
               headerOffset,
               header.BITPIX,
