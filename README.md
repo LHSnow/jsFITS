@@ -1,6 +1,6 @@
 # \<fits-img>
 
-This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
+This webcomponent package follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
 
 ## Installation
 
@@ -77,4 +77,4 @@ To run a local development server that serves the basic demo located in `demo/in
 
 ## Acknowledgements
 
-Largely based on the vanilla js FITS reader [slowe/jsFITS](https://github.com/slowe/jsFITS). 
+Largely based on the vanilla js FitsImg reader [slowe/jsFITS](https://github.com/slowe/jsFITS). 

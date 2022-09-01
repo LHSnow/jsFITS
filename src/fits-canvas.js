@@ -14,7 +14,7 @@ import {
   colormapHeat,
 } from './colormap.js';
 
-export class FITSCanvas extends LitElement {
+export class FitsCanvas extends LitElement {
   constructor() {
     super();
     this.src = '';
@@ -102,7 +102,7 @@ export class FITSCanvas extends LitElement {
   }
 }
 
-FITSCanvas.properties = {
+FitsCanvas.properties = {
   src: { type: String },
   stretch: { type: String, reflect: true },
   colormap: { type: String, reflect: true },

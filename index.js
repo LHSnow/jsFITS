@@ -1,2 +1,2 @@
-export { FITS } from './fits-img.js';
-export { Keogram } from './fits-keogram.js';
+export { FitsImg } from './src/fits-img.js';
+export { FitsKeogram } from './src/fits-keogram.js';

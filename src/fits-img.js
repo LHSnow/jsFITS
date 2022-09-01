@@ -1,8 +1,8 @@
 import { html } from 'lit';
 import { parseFITSHeader, parseFITSImage } from './fits-parser.js';
-import { FITSCanvas } from './fits-canvas.js';
+import { FitsCanvas } from './fits-canvas.js';
 
-export class FITS extends FITSCanvas {
+export class FitsImg extends FitsCanvas {
   willUpdate(changedProperties) {
     if (changedProperties.has('src')) {
       this._fetch().then(() => {
@@ -62,3 +62,5 @@ export class FITS extends FITSCanvas {
     return this.ready;
   }
 }
+
+window.customElements.define('fits-img', FitsImg);

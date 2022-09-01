@@ -4,60 +4,30 @@
   "modules": [
     {
       "kind": "javascript-module",
-      "path": "fits-img.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "custom-element-definition",
-          "name": "fits-img",
-          "declaration": {
-            "name": "FITS",
-            "module": "/src/fits.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "fits-keogram.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "custom-element-definition",
-          "name": "fits-keogram",
-          "declaration": {
-            "name": "Keogram",
-            "module": "/src/keogram.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "index.js",
       "declarations": [],
       "exports": [
         {
           "kind": "js",
-          "name": "FITS",
+          "name": "FitsImg",
           "declaration": {
-            "name": "FITS",
-            "module": "./src/fits.js"
+            "name": "FitsImg",
+            "module": "./src/fits-img.js"
           }
         },
         {
           "kind": "js",
-          "name": "Keogram",
+          "name": "FitsKeogram",
           "declaration": {
-            "name": "Keogram",
-            "module": "./src/keogram.js"
+            "name": "FitsKeogram",
+            "module": "./src/fits-keogram.js"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "build/fits-img-478a973c.js",
+      "path": "dist/fits-canvas-d275367d.js",
       "declarations": [
         {
           "kind": "variable",
@@ -86,7 +56,21 @@
               "name": "t",
               "default": "new WeakMap"
             }
-          ]
+          ],
+          "tagName": "fits-img",
+          "customElement": true
+        },
+        {
+          "kind": "variable",
+          "name": "a",
+          "type": {
+            "text": "object"
+          },
+          "default": "{toAttribute(t,e){switch(e){case Boolean:t=t?l:null;break;case Object:case Array:t=null==t?t:JSON.stringify(t)}return t},fromAttribute(t,e){let i=t;switch(e){case Boolean:i=null!==t;break;case Number:i=null===t?null:Number(t);break;case Object:case Array:try{i=JSON.parse(t)}catch(t){i=null}}return i}}"
+        },
+        {
+          "kind": "variable",
+          "name": "p"
         },
         {
           "kind": "variable",
@@ -94,7 +78,7 @@
         },
         {
           "kind": "variable",
-          "name": "P"
+          "name": "N"
         },
         {
           "kind": "variable",
@@ -103,7 +87,7 @@
         {
           "kind": "class",
           "description": "",
-          "name": "J",
+          "name": "K",
           "members": [
             {
               "kind": "method",
@@ -125,12 +109,42 @@
           ],
           "superclass": {
             "name": "u",
-            "module": "build/fits-img-478a973c.js"
+            "module": "dist/fits-canvas-d275367d.js"
           }
         },
         {
           "kind": "function",
           "name": "et",
+          "parameters": [
+            {
+              "name": "t"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "it",
+          "parameters": [
+            {
+              "name": "t"
+            },
+            {
+              "name": "e"
+            },
+            {
+              "name": "i"
+            },
+            {
+              "name": "s"
+            },
+            {
+              "name": "n"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "st",
           "parameters": [
             {
               "name": "t"
@@ -143,7 +157,7 @@
         {
           "kind": "class",
           "description": "",
-          "name": "ut",
+          "name": "$t",
           "members": [
             {
               "kind": "method",
@@ -259,7 +273,7 @@
               "type": {
                 "text": "object"
               },
-              "default": "{linear:it,sqrt:st,cuberoot:nt,log:rt,loglog:ot,sqrtlog:ht}"
+              "default": "{linear:nt,sqrt:rt,cuberoot:ot,log:lt,loglog:ht,sqrtlog:at}"
             },
             {
               "kind": "field",
@@ -267,14 +281,14 @@
               "type": {
                 "text": "object"
               },
-              "default": "{blackbody:lt,heat:lt,A:at,B:ct,gray:dt}"
+              "default": "{blackbody:ct,heat:ct,A:dt,B:ut,gray:pt}"
             },
             {
               "kind": "method",
               "name": "createRenderRoot",
               "inheritedFrom": {
-                "name": "J",
-                "module": "build/fits-img-478a973c.js"
+                "name": "K",
+                "module": "dist/fits-canvas-d275367d.js"
               }
             },
             {
@@ -285,8 +299,8 @@
               },
               "default": "{host:this}",
               "inheritedFrom": {
-                "name": "J",
-                "module": "build/fits-img-478a973c.js"
+                "name": "K",
+                "module": "dist/fits-canvas-d275367d.js"
               }
             },
             {
@@ -294,20 +308,76 @@
               "name": "_$Do",
               "default": "void 0",
               "inheritedFrom": {
-                "name": "J",
-                "module": "build/fits-img-478a973c.js"
+                "name": "K",
+                "module": "dist/fits-canvas-d275367d.js"
               }
             }
           ],
           "superclass": {
-            "name": "J",
-            "module": "build/fits-img-478a973c.js"
+            "name": "K",
+            "module": "dist/fits-canvas-d275367d.js"
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "$",
+          "declaration": {
+            "name": "N",
+            "module": "dist/fits-canvas-d275367d.js"
           }
         },
         {
+          "kind": "js",
+          "name": "F",
+          "declaration": {
+            "name": "$t",
+            "module": "dist/fits-canvas-d275367d.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "a",
+          "declaration": {
+            "name": "it",
+            "module": "dist/fits-canvas-d275367d.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "e",
+          "declaration": {
+            "name": "st",
+            "module": "dist/fits-canvas-d275367d.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "p",
+          "declaration": {
+            "name": "et",
+            "module": "dist/fits-canvas-d275367d.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "s",
+          "declaration": {
+            "name": "K",
+            "module": "dist/fits-canvas-d275367d.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/fits-img.js",
+      "declarations": [
+        {
           "kind": "class",
           "description": "",
-          "name": "anonymous_0",
+          "name": "s",
           "members": [
             {
               "kind": "method",
@@ -315,8 +385,8 @@
             }
           ],
           "superclass": {
-            "name": "ut",
-            "module": "build/fits-img-478a973c.js"
+            "name": "t",
+            "module": "/dist/fits-canvas-d275367d.js"
           },
           "tagName": "fits-img",
           "customElement": true
@@ -327,53 +397,239 @@
           "kind": "custom-element-definition",
           "name": "fits-img",
           "declaration": {
-            "name": "anonymous_0",
-            "module": "build/fits-img-478a973c.js"
+            "name": "s",
+            "module": "dist/fits-img.js"
           }
         },
         {
           "kind": "js",
-          "name": "$",
+          "name": "FitsImg",
           "declaration": {
-            "name": "P",
-            "module": "build/fits-img-478a973c.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "F",
-          "declaration": {
-            "name": "ut",
-            "module": "build/fits-img-478a973c.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "e",
-          "declaration": {
-            "name": "et",
-            "module": "build/fits-img-478a973c.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "s",
-          "declaration": {
-            "name": "J",
-            "module": "build/fits-img-478a973c.js"
+            "name": "s",
+            "module": "dist/fits-img.js"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "build/inline-module-43238cc1e4d8c41eff7a3d1928cc9748.js",
-      "declarations": [],
-      "exports": []
+      "path": "dist/fits-keogram.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "i",
+          "parameters": [
+            {
+              "name": "t"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "a",
+          "members": [
+            {
+              "kind": "method",
+              "name": "handleSlotchange",
+              "parameters": [
+                {
+                  "name": "t"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_images",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "superclass": {
+            "name": "t",
+            "module": "/dist/fits-canvas-d275367d.js"
+          },
+          "tagName": "fits-keogram",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "fits-keogram",
+          "declaration": {
+            "name": "a",
+            "module": "dist/fits-keogram.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FitsKeogram",
+          "declaration": {
+            "name": "a",
+            "module": "dist/fits-keogram.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createKeogramFrom",
+          "declaration": {
+            "name": "i",
+            "module": "dist/fits-keogram.js"
+          }
+        }
+      ]
     },
     {
       "kind": "javascript-module",
-      "path": "build/inline-module-44a5d1fd79a20be8918cae999ac7940d.js",
+      "path": "dist/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FitsImg",
+          "declaration": {
+            "name": "FitsImg",
+            "module": "\"./fits-img.js\""
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FitsKeogram",
+          "declaration": {
+            "name": "FitsKeogram",
+            "module": "\"./fits-keogram.js\""
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/inline-module-4dd01e5d50b7fdf69ee4b6e3ca9c75c6.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "o",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_changeStretch",
+              "parameters": [
+                {
+                  "name": "t"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_changeColormap",
+              "parameters": [
+                {
+                  "name": "t"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_changeScaleCutoff",
+              "parameters": [
+                {
+                  "name": "t"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_stretch",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"linear\"",
+              "privacy": "public",
+              "attribute": "_stretch"
+            },
+            {
+              "kind": "field",
+              "name": "_colormap",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"gray\"",
+              "privacy": "public",
+              "attribute": "_colormap"
+            },
+            {
+              "kind": "field",
+              "name": "_scaleCutoff",
+              "type": {
+                "text": "number"
+              },
+              "default": ".999",
+              "privacy": "public",
+              "attribute": "_scaleCutoff"
+            },
+            {
+              "kind": "field",
+              "name": "_times"
+            },
+            {
+              "kind": "field",
+              "name": "_src",
+              "privacy": "public",
+              "attribute": "_src"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "_src",
+              "fieldName": "_src"
+            },
+            {
+              "name": "_stretch",
+              "fieldName": "_stretch"
+            },
+            {
+              "name": "_colormap",
+              "fieldName": "_colormap"
+            },
+            {
+              "name": "_scaleCutoff",
+              "fieldName": "_scaleCutoff"
+            }
+          ],
+          "superclass": {
+            "name": "t",
+            "module": "/dist/fits-canvas-d275367d.js"
+          },
+          "tagName": "fits-demo",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "fits-demo",
+          "declaration": {
+            "name": "o",
+            "module": "dist/inline-module-4dd01e5d50b7fdf69ee4b6e3ca9c75c6.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FITSDemo",
+          "declaration": {
+            "name": "o",
+            "module": "dist/inline-module-4dd01e5d50b7fdf69ee4b6e3ca9c75c6.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/inline-module-5ce7c3e8c29cc021d454fa355f7a6add.js",
       "declarations": [
         {
           "kind": "class",
@@ -446,40 +702,6 @@
               "name": "_src",
               "privacy": "public",
               "attribute": "_src"
-            },
-            {
-              "kind": "field",
-              "name": "styleSheet",
-              "inheritedFrom": {
-                "name": "s",
-                "module": "build/fits-img-478a973c.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "toString",
-              "inheritedFrom": {
-                "name": "s",
-                "module": "build/fits-img-478a973c.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "cssText",
-              "default": "t",
-              "inheritedFrom": {
-                "name": "s",
-                "module": "build/fits-img-478a973c.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "t",
-              "default": "new WeakMap",
-              "inheritedFrom": {
-                "name": "s",
-                "module": "build/fits-img-478a973c.js"
-              }
             }
           ],
           "attributes": [
@@ -502,7 +724,7 @@
           ],
           "superclass": {
             "name": "t",
-            "module": "/build/fits-img-478a973c.js"
+            "module": "/dist/fits-canvas-d275367d.js"
           },
           "tagName": "fits-demo",
           "customElement": true
@@ -514,7 +736,7 @@
           "name": "fits-demo",
           "declaration": {
             "name": "o",
-            "module": "build/inline-module-44a5d1fd79a20be8918cae999ac7940d.js"
+            "module": "dist/inline-module-5ce7c3e8c29cc021d454fa355f7a6add.js"
           }
         },
         {
@@ -522,201 +744,70 @@
           "name": "FITSDemo",
           "declaration": {
             "name": "o",
-            "module": "build/inline-module-44a5d1fd79a20be8918cae999ac7940d.js"
+            "module": "dist/inline-module-5ce7c3e8c29cc021d454fa355f7a6add.js"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "build/inline-module-7c3b7e32eae2292311e27420bee252c9.js",
+      "path": "stories/index.stories.js",
       "declarations": [
         {
-          "kind": "class",
-          "description": "",
-          "name": "anonymous_0",
-          "members": [
-            {
-              "kind": "method",
-              "name": "handleSlotchange",
-              "parameters": [
-                {
-                  "name": "t"
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "_images",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
-            }
-          ],
-          "superclass": {
-            "name": "t",
-            "module": "/build/fits-img-478a973c.js"
-          },
-          "tagName": "fits-img",
-          "customElement": true
+          "kind": "variable",
+          "name": "Regular"
         },
         {
-          "kind": "class",
-          "description": "",
-          "name": "o",
-          "members": [
-            {
-              "kind": "method",
-              "name": "_changeStretch",
-              "parameters": [
-                {
-                  "name": "t"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "_changeColormap",
-              "parameters": [
-                {
-                  "name": "t"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "_changeScaleCutoff",
-              "parameters": [
-                {
-                  "name": "t"
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "_stretch",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"linear\"",
-              "privacy": "public",
-              "attribute": "_stretch"
-            },
-            {
-              "kind": "field",
-              "name": "_colormap",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"gray\"",
-              "privacy": "public",
-              "attribute": "_colormap"
-            },
-            {
-              "kind": "field",
-              "name": "_scaleCutoff",
-              "type": {
-                "text": "number"
-              },
-              "default": ".999",
-              "privacy": "public",
-              "attribute": "_scaleCutoff"
-            },
-            {
-              "kind": "field",
-              "name": "_times"
-            },
-            {
-              "kind": "field",
-              "name": "_src",
-              "privacy": "public",
-              "attribute": "_src"
-            },
-            {
-              "kind": "field",
-              "name": "styleSheet",
-              "inheritedFrom": {
-                "name": "s",
-                "module": "build/fits-img-478a973c.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "toString",
-              "inheritedFrom": {
-                "name": "s",
-                "module": "build/fits-img-478a973c.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "cssText",
-              "default": "t",
-              "inheritedFrom": {
-                "name": "s",
-                "module": "build/fits-img-478a973c.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "t",
-              "default": "new WeakMap",
-              "inheritedFrom": {
-                "name": "s",
-                "module": "build/fits-img-478a973c.js"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "_src",
-              "fieldName": "_src"
-            },
-            {
-              "name": "_stretch",
-              "fieldName": "_stretch"
-            },
-            {
-              "name": "_colormap",
-              "fieldName": "_colormap"
-            },
-            {
-              "name": "_scaleCutoff",
-              "fieldName": "_scaleCutoff"
-            }
-          ],
-          "superclass": {
-            "name": "s",
-            "module": "/build/fits-img-478a973c.js"
-          },
-          "tagName": "fits-demo",
-          "customElement": true
+          "kind": "variable",
+          "name": "CustomTitle"
+        },
+        {
+          "kind": "variable",
+          "name": "CustomCounter"
+        },
+        {
+          "kind": "variable",
+          "name": "SlottedContent"
         }
       ],
       "exports": [
         {
-          "kind": "custom-element-definition",
-          "name": "fits-keogram",
+          "kind": "js",
+          "name": "default",
           "declaration": {
-            "name": "anonymous_0",
-            "module": "build/inline-module-7c3b7e32eae2292311e27420bee252c9.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "fits-demo",
-          "declaration": {
-            "name": "o",
-            "module": "build/inline-module-7c3b7e32eae2292311e27420bee252c9.js"
+            "module": "stories/index.stories.js"
           }
         },
         {
           "kind": "js",
-          "name": "FITSDemo",
+          "name": "Regular",
           "declaration": {
-            "name": "o",
-            "module": "build/inline-module-7c3b7e32eae2292311e27420bee252c9.js"
+            "name": "Regular",
+            "module": "stories/index.stories.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "CustomTitle",
+          "declaration": {
+            "name": "CustomTitle",
+            "module": "stories/index.stories.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "CustomCounter",
+          "declaration": {
+            "name": "CustomCounter",
+            "module": "stories/index.stories.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SlottedContent",
+          "declaration": {
+            "name": "SlottedContent",
+            "module": "stories/index.stories.js"
           }
         }
       ]
@@ -804,7 +895,7 @@
         {
           "kind": "class",
           "description": "",
-          "name": "FITSCanvas",
+          "name": "FitsCanvas",
           "members": [
             {
               "kind": "method",
@@ -941,10 +1032,498 @@
       "exports": [
         {
           "kind": "js",
-          "name": "FITSCanvas",
+          "name": "FitsCanvas",
           "declaration": {
-            "name": "FITSCanvas",
+            "name": "FitsCanvas",
             "module": "src/fits-canvas.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/fits-img.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "FitsImg",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_fetch"
+            },
+            {
+              "kind": "method",
+              "name": "draw",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "src",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "stretch",
+              "type": {
+                "text": "string"
+              },
+              "default": "'linear'",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "colormap",
+              "type": {
+                "text": "string"
+              },
+              "default": "'gray'",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "width",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "height",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "frame",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "scaleCutoff",
+              "type": {
+                "text": "number"
+              },
+              "default": "0.999",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_rawImageData",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_frames",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "header",
+              "type": {
+                "text": "object"
+              },
+              "default": "{}",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_canvas",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_ctx",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_rgbImage",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_stretchFunctions",
+              "type": {
+                "text": "object"
+              },
+              "default": "{\n      linear: stretchLinear,\n      sqrt: stretchSqrt,\n      cuberoot: stretchCuberoot,\n      log: stretchLog,\n      loglog: stretchLoglog,\n      sqrtlog: stretchSqrtlog,\n    }",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_colormaps",
+              "type": {
+                "text": "object"
+              },
+              "default": "{\n      blackbody: colormapHeat,\n      heat: colormapHeat,\n      A: colormapA,\n      B: colormapB,\n      gray: colormapGray,\n    }",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "FitsCanvas",
+            "module": "/src/fits-canvas.js"
+          },
+          "tagName": "fits-img",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FitsImg",
+          "declaration": {
+            "name": "FitsImg",
+            "module": "src/fits-img.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "fits-img",
+          "declaration": {
+            "name": "FitsImg",
+            "module": "src/fits-img.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/fits-keogram.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createKeogramFrom",
+          "parameters": [
+            {
+              "name": "slices"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "FitsKeogram",
+          "members": [
+            {
+              "kind": "method",
+              "name": "handleSlotchange",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_images",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "draw",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "src",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "stretch",
+              "type": {
+                "text": "string"
+              },
+              "default": "'linear'",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "colormap",
+              "type": {
+                "text": "string"
+              },
+              "default": "'gray'",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "width",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "height",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "frame",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "scaleCutoff",
+              "type": {
+                "text": "number"
+              },
+              "default": "0.999",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_rawImageData",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_frames",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "header",
+              "type": {
+                "text": "object"
+              },
+              "default": "{}",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_canvas",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_ctx",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_rgbImage",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_stretchFunctions",
+              "type": {
+                "text": "object"
+              },
+              "default": "{\n      linear: stretchLinear,\n      sqrt: stretchSqrt,\n      cuberoot: stretchCuberoot,\n      log: stretchLog,\n      loglog: stretchLoglog,\n      sqrtlog: stretchSqrtlog,\n    }",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_colormaps",
+              "type": {
+                "text": "object"
+              },
+              "default": "{\n      blackbody: colormapHeat,\n      heat: colormapHeat,\n      A: colormapA,\n      B: colormapB,\n      gray: colormapGray,\n    }",
+              "inheritedFrom": {
+                "name": "FitsCanvas",
+                "module": "src/fits-canvas.js"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "FitsCanvas",
+            "module": "/src/fits-canvas.js"
+          },
+          "tagName": "fits-keogram",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createKeogramFrom",
+          "declaration": {
+            "name": "createKeogramFrom",
+            "module": "src/fits-keogram.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FitsKeogram",
+          "declaration": {
+            "name": "FitsKeogram",
+            "module": "src/fits-keogram.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "fits-keogram",
+          "declaration": {
+            "name": "FitsKeogram",
+            "module": "src/fits-keogram.js"
           }
         }
       ]
@@ -1019,478 +1598,6 @@
           "declaration": {
             "name": "extractKeogramSlice",
             "module": "src/fits-parser.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/fits.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "FITS",
-          "members": [
-            {
-              "kind": "method",
-              "name": "_fetch"
-            },
-            {
-              "kind": "method",
-              "name": "draw",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "src",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "stretch",
-              "type": {
-                "text": "string"
-              },
-              "default": "'linear'",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "colormap",
-              "type": {
-                "text": "string"
-              },
-              "default": "'gray'",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "width",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "height",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "frame",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "scaleCutoff",
-              "type": {
-                "text": "number"
-              },
-              "default": "0.999",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_rawImageData",
-              "type": {
-                "text": "null"
-              },
-              "default": "null",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_frames",
-              "type": {
-                "text": "number"
-              },
-              "default": "1",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "header",
-              "type": {
-                "text": "object"
-              },
-              "default": "{}",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_canvas",
-              "type": {
-                "text": "null"
-              },
-              "default": "null",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_ctx",
-              "type": {
-                "text": "null"
-              },
-              "default": "null",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_rgbImage",
-              "type": {
-                "text": "null"
-              },
-              "default": "null",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_stretchFunctions",
-              "type": {
-                "text": "object"
-              },
-              "default": "{\n      linear: stretchLinear,\n      sqrt: stretchSqrt,\n      cuberoot: stretchCuberoot,\n      log: stretchLog,\n      loglog: stretchLoglog,\n      sqrtlog: stretchSqrtlog,\n    }",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_colormaps",
-              "type": {
-                "text": "object"
-              },
-              "default": "{\n      blackbody: colormapHeat,\n      heat: colormapHeat,\n      A: colormapA,\n      B: colormapB,\n      gray: colormapGray,\n    }",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            }
-          ],
-          "superclass": {
-            "name": "FITSCanvas",
-            "module": "/src/fits-canvas.js"
-          },
-          "tagName": "fits-img",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "FITS",
-          "declaration": {
-            "name": "FITS",
-            "module": "src/fits.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/keogram.js",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "createKeogramFrom",
-          "parameters": [
-            {
-              "name": "slices"
-            }
-          ]
-        },
-        {
-          "kind": "class",
-          "description": "",
-          "name": "Keogram",
-          "members": [
-            {
-              "kind": "method",
-              "name": "handleSlotchange",
-              "parameters": [
-                {
-                  "name": "e"
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "_images",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "draw",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "src",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "stretch",
-              "type": {
-                "text": "string"
-              },
-              "default": "'linear'",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "colormap",
-              "type": {
-                "text": "string"
-              },
-              "default": "'gray'",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "width",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "height",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "frame",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "scaleCutoff",
-              "type": {
-                "text": "number"
-              },
-              "default": "0.999",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_rawImageData",
-              "type": {
-                "text": "null"
-              },
-              "default": "null",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_frames",
-              "type": {
-                "text": "number"
-              },
-              "default": "1",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "header",
-              "type": {
-                "text": "object"
-              },
-              "default": "{}",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_canvas",
-              "type": {
-                "text": "null"
-              },
-              "default": "null",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_ctx",
-              "type": {
-                "text": "null"
-              },
-              "default": "null",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_rgbImage",
-              "type": {
-                "text": "null"
-              },
-              "default": "null",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_stretchFunctions",
-              "type": {
-                "text": "object"
-              },
-              "default": "{\n      linear: stretchLinear,\n      sqrt: stretchSqrt,\n      cuberoot: stretchCuberoot,\n      log: stretchLog,\n      loglog: stretchLoglog,\n      sqrtlog: stretchSqrtlog,\n    }",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "_colormaps",
-              "type": {
-                "text": "object"
-              },
-              "default": "{\n      blackbody: colormapHeat,\n      heat: colormapHeat,\n      A: colormapA,\n      B: colormapB,\n      gray: colormapGray,\n    }",
-              "inheritedFrom": {
-                "name": "FITSCanvas",
-                "module": "src/fits-canvas.js"
-              }
-            }
-          ],
-          "superclass": {
-            "name": "FITSCanvas",
-            "module": "/src/fits-canvas.js"
-          },
-          "tagName": "fits-keogram",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "createKeogramFrom",
-          "declaration": {
-            "name": "createKeogramFrom",
-            "module": "src/keogram.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "Keogram",
-          "declaration": {
-            "name": "Keogram",
-            "module": "src/keogram.js"
           }
         }
       ]
@@ -1637,69 +1744,6 @@
           "declaration": {
             "name": "stretchSqrtlog",
             "module": "src/stretch.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "stories/index.stories.js",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "Regular"
-        },
-        {
-          "kind": "variable",
-          "name": "CustomTitle"
-        },
-        {
-          "kind": "variable",
-          "name": "CustomCounter"
-        },
-        {
-          "kind": "variable",
-          "name": "SlottedContent"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "module": "stories/index.stories.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "Regular",
-          "declaration": {
-            "name": "Regular",
-            "module": "stories/index.stories.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "CustomTitle",
-          "declaration": {
-            "name": "CustomTitle",
-            "module": "stories/index.stories.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "CustomCounter",
-          "declaration": {
-            "name": "CustomCounter",
-            "module": "stories/index.stories.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "SlottedContent",
-          "declaration": {
-            "name": "SlottedContent",
-            "module": "stories/index.stories.js"
           }
         }
       ]

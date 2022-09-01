@@ -1,9 +1,9 @@
 import { html } from 'lit';
 import { fixture, expect } from '@open-wc/testing';
 
-import '../fits-img.js';
+import '../src/fits-img.js';
 import { extractKeogramSlice } from '../src/fits-parser.js';
-import { createKeogramFrom } from '../src/keogram.js';
+import { createKeogramFrom } from '../src/fits-keogram.js';
 
 describe('FitsImg', () => {
   it('has default values for attributes', async () => {

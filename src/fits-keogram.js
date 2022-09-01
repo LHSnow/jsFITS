@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import { FITSCanvas } from './fits-canvas.js';
+import { FitsCanvas } from './fits-canvas.js';
 import { extractKeogramSlice } from './fits-parser.js';
 
 export function createKeogramFrom(slices) {
@@ -14,7 +14,7 @@ export function createKeogramFrom(slices) {
   return rawKeogram;
 }
 
-export class Keogram extends FITSCanvas {
+export class FitsKeogram extends FitsCanvas {
   constructor() {
     super();
     this._images = null;
@@ -47,3 +47,5 @@ export class Keogram extends FITSCanvas {
       <slot @slotchange=${this.handleSlotchange} hidden></slot> `;
   }
 }
+
+window.customElements.define('fits-keogram', FitsKeogram);

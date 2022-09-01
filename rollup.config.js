@@ -48,7 +48,8 @@ export default {
   input: 'index.js',
 
   output: {
-    dir: 'build',
+    dir: 'dist',
+    entryFileNames: '[name]-[hash].js',
   },
 
   preserveEntrySignatures: 'strict',
