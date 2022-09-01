@@ -1,0 +1,102 @@
+default:
+  image: node:16.13-buster-slim
+  tags:
+    - IRF
+
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - .npm
+
+stages:
+  - install
+  - build
+  - test
+  - prepare
+  - release
+  - deploy
+
+before_script:
+  # install from package-lock.json, not package.json to ensure a reproducible build
+  - npm ci --cache .npm --prefer-offline
+
+build:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - dist
+    expire_in: 1 day
+
+.pushed:
+  rules:
+    # once pushed commits have passed testing once, assume they are ok on re-runs
+    - if: $CI_PIPELINE_SOURCE == 'push'
+
+audit_javascript:
+  stage: test
+  extends: .pushed
+  script:
+    # audit production dependencies for security issues
+    - npm run test
+    - npm audit --production --json > production_audit.json
+    # ensure code formatting rules are followed (exclusions set in .prettierignore)
+    - ./node_modules/.bin/prettier --list-different src > make_prettier.txt
+  artifacts:
+    paths:
+      - production_audit.json
+      - make_prettier.txt
+    expire_in: 1 week
+
+changelog:
+  stage: prepare
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_PIPELINE_SOURCE == 'push'
+  script:
+    # The lines of CHANGELOG.md that contains the changes for the current release
+    # Defined by the first occurrence (line number) of a previous release:
+    #   a markdown header containing a link
+    - >
+      LINES=$(
+      grep --extended-regexp --line-number --max-count 2
+      '#+ \['
+      CHANGELOG.md | cut -f1 -d':' | tail -n1 )
+    # All the lines until $LINES exclusive
+    - head CHANGELOG.md -n$LINES | head -n-1 > changelog.md
+  artifacts:
+    paths:
+      - changelog.md
+    expire_in: 1 day
+
+release:
+  stage: release
+  needs:
+    - job: changelog
+      artifacts: true
+  before_script:
+    - ''
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - ''
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_PIPELINE_SOURCE == 'push'
+  release:
+    name: $CI_COMMIT_TAG
+    description: ./changelog.md
+    tag_name: $CI_COMMIT_TAG
+    ref: $CI_COMMIT_TAG
+
+pages:
+  stage: deploy
+  needs:
+    - job: build
+      artifacts: true
+  script:
+    # GitLab Pages only considers files in a directory called "public"
+    - cp -r dist public
+  artifacts:
+    paths:
+      # deploy script has copied the files to the public directory,
+      # but the gitlab runner also needs to know where to get them
+      - public
