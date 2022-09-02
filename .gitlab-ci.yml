@@ -39,7 +39,6 @@ audit_javascript:
   extends: .pushed
   script:
     # audit production dependencies for security issues
-    - npm run test
     - npm audit --production --json > production_audit.json
     # ensure code formatting rules are followed (exclusions set in .prettierignore)
     - ./node_modules/.bin/prettier --list-different src > make_prettier.txt
