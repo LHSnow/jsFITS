@@ -36,12 +36,7 @@ export default {
 
     // Copy static assets to build directory
     copy({
-      patterns: [
-        'files/**/*',
-        'custom-elements.json',
-        'package.json',
-        'package-lock.json',
-      ],
+      patterns: ['custom-elements.json', 'package.json', 'package-lock.json'],
     }),
   ],
 

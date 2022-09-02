@@ -94,6 +94,7 @@ pages:
   script:
     # GitLab Pages only considers files in a directory called "public"
     - cp -r dist public
+    - sh download-example-fits.sh
   artifacts:
     paths:
       # deploy script has copied the files to the public directory,
