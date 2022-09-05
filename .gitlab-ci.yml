@@ -92,6 +92,7 @@ pages:
     - job: build
       artifacts: true
   script:
+    - apt update
     - apt install wget
     # GitLab Pages only considers files in a directory called "public"
     - cp -r dist public
