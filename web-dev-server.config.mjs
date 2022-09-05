@@ -13,11 +13,11 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
   },
 
   middleware: [
-    proxy('/files', {
+    proxy('*/files', {
       target: 'http://dalek.umea.irf.se',
       changeOrigin: true,
       logs: true,
-      rewrite: path => path.replace('files', 'peje/shrink-fits/2022-03-03'),
+      rewrite: path => path.replace(/.*\/files/, 'peje/shrink-fits/2022-03-03/19'),
       events: {
         error (err, req, res) {
           console.log(err)
