@@ -93,7 +93,8 @@ pages:
       artifacts: true
   script:
     - apt update
-    - apt install wget
+    - apt autoremove -y
+    - apt install -y wget
     # GitLab Pages only considers files in a directory called "public"
     - cp -r dist public
     - sh download-example-fits.sh
