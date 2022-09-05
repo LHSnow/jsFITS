@@ -45,6 +45,9 @@
 2022-03-03T19.24.20E.replaced.fits
 2022-03-03T19.24.30E.replaced.fits
 2022-03-03T19.24.40E.replaced.fits
+2022-03-03T19.30.40E.replaced.fits
+2022-03-03T19.59.40E.replaced.fits
+2022-03-03T19.31.00E.replaced.fits
 2022-03-03T19.25.00E.replaced.fits
 2022-03-03T19.25.20E.replaced.fits
 2022-03-03T19.25.30E.replaced.fits
