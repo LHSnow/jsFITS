@@ -25,14 +25,23 @@
 
         constructor() {
             super();
+            this._files = {}
             this._stretch = 'linear';
             this._colormap = 'gray';
             this._scaleCutoff = 0.999;
-            const seconds = ['00', 20, 30, 40];
-            this._times = Array.from({ length: 37 }, (x, i) => {
-                const minute = i + 23;
-                return seconds.map(second => `${minute}.${second}`);
-            }).flat();
+            fetch('/api/2022/03/31/cube.json')
+              .then(response => response.json())
+              .then(cubes => cubes.filter(cube => !cube.includes('-10')))
+              .then(cubes => {
+                cubes.forEach(cube => {
+                  const station = cube.slice(-16, -15);
+                  const wavelength = cube.slice(-14, -10);
+                  this._files[wavelength] = this._files[wavelength] || {};
+                  this._files[wavelength][station] = this._files[wavelength][station] || [];
+                  this._files[wavelength][station].push(cube);
+                })
+                this.requestUpdate();
+            });
         }
 
         _changeStretch(event) {
@@ -47,14 +56,19 @@
             this._scaleCutoff = event.target.value;
         }
 
-        render() {
-            const images = this._times.map(
-                time =>
-                    html`<fits-img
-                src="files/2022-03-03T19.${time}E.replaced.fits"
-              ></fits-img>`
-            );
+        images(wavelength, station) {
+          if(!this._files) {
+            return html``;
+          }
+          return this._files[wavelength][station.toUpperCase()].map(cube => {
+            const name = cube.slice(2);
+            return html`<fits-img
+              src="files/2022/03/31/${name}"
+              ></fits-img>`;
+          })
+        }
 
+        render() {
             return html`
             <h1>&lt;fits-keogram&gt; interactive demo</h1>
             <p><a href="index.html">Full size image interactive demo</a></p>
@@ -92,7 +106,7 @@
             </label></p>
             <div><fits-keogram stretch=${this._stretch}
                 colormap=${this._colormap}
-                scale-cutoff="${this._scaleCutoff}">${images}</fits-keogram></div>
+                scale-cutoff="${this._scaleCutoff}">${this.images('5577', 'a')}</fits-keogram></div>
             `;
         }
     }
