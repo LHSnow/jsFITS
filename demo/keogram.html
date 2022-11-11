@@ -21,6 +21,7 @@
             _stretch: { type: String },
             _colormap: { type: String },
             _scaleCutoff: { type: Number },
+            _wavelength: { type: String }
         };
 
         constructor() {
@@ -29,19 +30,37 @@
             this._stretch = 'linear';
             this._colormap = 'gray';
             this._scaleCutoff = 0.999;
-            fetch('/api/2022/03/31/cube.json')
-              .then(response => response.json())
-              .then(cubes => cubes.filter(cube => !cube.includes('-10')))
-              .then(cubes => {
-                cubes.forEach(cube => {
-                  const station = cube.slice(-16, -15);
-                  const wavelength = cube.slice(-14, -10);
-                  this._files[wavelength] = this._files[wavelength] || {};
-                  this._files[wavelength][station] = this._files[wavelength][station] || [];
-                  this._files[wavelength][station].push(cube);
-                })
-                this.requestUpdate();
-            });
+            this._wavelength = '5577';
+            this._stations = new Set();
+        }
+
+        async connectedCallback() {
+          super.connectedCallback();
+          await this.loadData();
+        }
+
+        async loadData() {
+          await new Promise((r) => setTimeout(r, 0));
+          const evening = await fetch('api/2022/03/30/cube.json');
+          const morning = await fetch('api/2022/03/31/cube.json');
+          let eveningCubes = await evening.json();
+          let morningCubes = await morning.json();
+
+          eveningCubes = eveningCubes.filter(cube => Number(cube.split('/').slice(-2,-1)) >= 12)
+          morningCubes = morningCubes.filter(cube => Number(cube.split('/').slice(-2,-1)) <= 12)
+
+          let cubes = eveningCubes.concat(morningCubes);
+
+          cubes = cubes.filter(cube => !cube.includes('-10'));
+          cubes.forEach(cube => {
+            const station = cube.slice(-16, -15);
+            const wavelength = cube.slice(-14, -10);
+            this._files[wavelength] = this._files[wavelength] || {};
+            this._files[wavelength][station] = this._files[wavelength][station] || [];
+            this._files[wavelength][station].push(cube);
+            this._stations.add(station);
+          })
+          this.requestUpdate();
         }
 
         _changeStretch(event) {
@@ -56,19 +75,38 @@
             this._scaleCutoff = event.target.value;
         }
 
-        images(wavelength, station) {
-          if(!this._files) {
+        _changeWavelength(event) {
+          this._wavelength = event.target.value;
+        }
+
+        images(station) {
+          if(!this._files || !this._files[this._wavelength]) {
             return html``;
           }
-          return this._files[wavelength][station.toUpperCase()].map(cube => {
-            const name = cube.slice(2);
+          station = station.toUpperCase();
+          return this._files[this._wavelength][station].map(cube => {
+            const filename = cube.slice(2);
+            const dateDirs = filename.slice(3).split('T')[0].replaceAll('-', '/')
             return html`<fits-img
-              src="files/2022/03/31/${name}"
+              src="files/${dateDirs}/${filename}"
               ></fits-img>`;
           })
         }
 
         render() {
+            const stations = Array.from(this._stations).map(key => {
+              return html`
+                <figure>
+                  <figcaption>${key}</figcaption>
+                  <fits-keogram stretch=${this._stretch}
+                    colormap=${this._colormap}
+                    scale-cutoff="${this._scaleCutoff}">
+                    ${this.images(key)}
+                  </fits-keogram>
+                </figure>
+              `
+            })
+
             return html`
             <h1>&lt;fits-keogram&gt; interactive demo</h1>
             <p><a href="index.html">Full size image interactive demo</a></p>
@@ -103,10 +141,19 @@
                 min="0"
                 max="1"
               />
-            </label></p>
-            <div><fits-keogram stretch=${this._stretch}
-                colormap=${this._colormap}
-                scale-cutoff="${this._scaleCutoff}">${this.images('5577', 'a')}</fits-keogram></div>
+            </label>
+            <label>
+              Wavelength (Å)
+              <select @change="${this._changeWavelength}" value="${this._wavelength}">
+                <option>4278</option>
+                <option selected>5577</option>
+                <option>6300</option>
+              </select>
+            </label>
+            </p>
+            <div>
+              ${stations}
+            </div>
             `;
         }
     }

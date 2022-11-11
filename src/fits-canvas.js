@@ -22,10 +22,10 @@ export class FitsCanvas extends LitElement {
     this.colormap = 'gray';
     this.width = 0;
     this.height = 0;
-    this.frame = 0;
+    this.depth = 1;
+    this.frameIndex = 0;
     this.scaleCutoff = 0.999;
     this._rawImageData = null;
-    this._frames = 1;
     this.header = {};
     this._canvas = null;
     this._ctx = null;
@@ -56,19 +56,23 @@ export class FitsCanvas extends LitElement {
     }
   }
 
+  imageFrame(frameIndex) {
+    const frameSize = this.width * this.height;
+    const frameStart = frameSize * frameIndex;
+    const frameEnd = frameStart + frameSize;
+    return this._rawImageData.slice(frameStart, frameEnd);
+  }
+
   // Calculate the pixel values using a defined stretch type and draw onto the canvas
   draw() {
     const hidden = this._canvas?.offsetParent === null;
     if (hidden || !this._rawImageData || !this._ctx || !this._rgbImage) return;
 
-    const tmpImageData = new Uint8ClampedArray(this.width * this.height);
-    const frameStart = this.width * this.height * this.frame;
     let min = 0;
-    const frameEnd = frameStart + tmpImageData.length;
     let index = 0;
-
-    const frame = this._rawImageData.slice(frameStart, frameEnd);
-    const sorted = frame.slice().sort();
+    const tmpImageData = new Uint8ClampedArray(this.width * this.height);
+    const image = this.imageFrame(this.frameIndex);
+    const sorted = image.slice().sort();
     const maxPercentile = Math.ceil(tmpImageData.length * this.scaleCutoff);
     const max = sorted[maxPercentile];
     while (min === 0 && index < tmpImageData.length) {
@@ -77,8 +81,8 @@ export class FitsCanvas extends LitElement {
     const range = max - min;
 
     let j = 0;
-    for (let i = frameStart; i < frameEnd; i += 1, j += 1) {
-      let val = this._stretchFunctions[this.stretch](frame[i], min, range);
+    for (let i = 0; i < tmpImageData.length; i += 1, j += 1) {
+      let val = this._stretchFunctions[this.stretch](image[i], min, range);
       if (Number.isNaN(val)) val = 0;
       else if (val < 0) val = 0;
       else if (val > 254) val = 254;
@@ -108,7 +112,8 @@ FitsCanvas.properties = {
   colormap: { type: String, reflect: true },
   width: { type: Number },
   height: { type: Number },
-  frame: { type: Number },
+  depth: { type: Number, reflect: true },
+  frameIndex: { type: Number, attribute: 'frame-index' },
   scaleCutoff: {
     type: Number,
     attribute: 'scale-cutoff',

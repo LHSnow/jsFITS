@@ -36,7 +36,7 @@ export class FitsImg extends FitsCanvas {
           const [header, headerOffset] = parseFITSHeader(buf);
 
           if (header.NAXIS > 2 && typeof header.NAXIS3 === 'number') {
-            self._frames = header.NAXIS3 > 1 ? header.NAXIS3 : 1;
+            self.depth = header.NAXIS3 > 1 ? header.NAXIS3 : 1;
           }
 
           if (header.NAXIS >= 2) {
@@ -53,7 +53,8 @@ export class FitsImg extends FitsCanvas {
               headerOffset,
               header.BITPIX,
               self.width,
-              self.height
+              self.height,
+              self.depth
             );
             resolve();
           }

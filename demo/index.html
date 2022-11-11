@@ -20,6 +20,7 @@
           _stretch: { type: String },
           _colormap: { type: String },
           _scaleCutoff: { type: Number },
+          _frameIndex: { type: Number },
         };
 
         constructor() {
@@ -27,9 +28,7 @@
           this._stretch = 'linear';
           this._colormap = 'gray';
           this._scaleCutoff = 0.999;
-          this._minutes = Array.from({length: 1}, (x, i) => {
-              return i + 22;
-            });
+          this._frameIndex = 0;
         }
 
         _changeStretch(event) {
@@ -44,16 +43,20 @@
           this._scaleCutoff = event.target.value;
         }
 
+        _changeFrame(event) {
+          this._frameIndex = event.target.value;
+        }
+
         render() {
-          const images = this._minutes.map(
-            minute =>
+          const images =
               html`<fits-img
-                src="files/2022-03-03T19.${minute}.15E.replaced.fits"
+                src="files/2022/03/30/22/2022-03-30T22.00.00A.5577.cube.fits"
                 stretch=${this._stretch}
                 colormap=${this._colormap}
                 scale-cutoff="${this._scaleCutoff}"
-              ></fits-img>`
-          );
+                frame-index="${this._frameIndex}"
+                depth="${this._depth}"
+              ></fits-img>`;
 
           return html`
             <h1>&lt;fits-img&gt; interactive demo</h1>
@@ -89,7 +92,15 @@
                 min="0"
                 max="1"
               />
-            </label></p><div style="display: flex; flex-wrap: wrap">${images}</div>`;
+            </label></p><div>${images}</div>
+            <label>Frame
+              <input type="number" min="0" step="1"
+                value="${this._frameIndex}"
+                @change="${this._changeFrame}">
+              <input type="range" min="0" step="1"
+                value="${this._frameIndex}"
+                @change="${this._changeFrame}">
+            </label>`;
 
         }
       }

@@ -22,29 +22,39 @@ export class FitsKeogram extends FitsCanvas {
 
   handleSlotchange(e) {
     const elements = e.target.assignedElements({ selector: 'fits-img' });
-
-    Promise.all(elements.map(fitsImg => fitsImg.ready)).then(() => {
-      this._images = elements;
-      this.requestUpdate();
+    const updatesCompleted = elements.map(element => element.updateComplete);
+    Promise.all(updatesCompleted).then(() => {
+      const readied = elements.map(element => element.ready);
+      Promise.all(readied).then(() => {
+        this._images = elements;
+        this.requestUpdate();
+      });
     });
   }
 
   updated() {
     if (this._images) {
-      this.width = this._images.length;
+      this.width = this._images
+        .map(i => i.depth)
+        .reduce((sum, depth) => sum + depth, 0);
       this.height = this._images[0].height;
-      this._rgbImage = this._ctx.createImageData(this.width, this.height);
-      const slices = this._images.map(image =>
-        extractKeogramSlice(image._rawImageData, this._images[0].width)
-      );
+      const slices = [];
+      this._images.forEach(image => {
+        for (let i = 0; i < image.depth; i += 1) {
+          slices.push(extractKeogramSlice(image.imageFrame(i), image.width));
+        }
+      });
       this._rawImageData = createKeogramFrom(slices);
+      this._rgbImage = this._ctx.createImageData(this.width, this.height);
       this.draw();
     }
   }
 
   render() {
-    return html`<canvas width="${this.width}" height="${this.height}"></canvas>
-      <slot @slotchange=${this.handleSlotchange} hidden></slot> `;
+    return html`
+      <canvas width="${this.width}" height="${this.height}"></canvas>
+      <slot @slotchange="${this.handleSlotchange}" hidden></slot>
+    `;
   }
 }
 

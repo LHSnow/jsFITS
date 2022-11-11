@@ -62,12 +62,13 @@ export function parseFITSImage(
   headerOffset,
   bitpixHeader,
   width,
-  height
+  height,
+  depth
 ) {
   const datatype = bitpixHeader > 0 ? 'Uint' : 'Float';
   const dataBits = Math.abs(bitpixHeader);
   const dataBytes = dataBits / 8;
-  const pixels = width * height;
+  const pixels = width * height * depth;
   const dataView = new DataView(buffer, headerOffset);
   // the window object contains the constructors for Uint16Array and other global classes
   const rawImageData = new window[`${datatype}${dataBits}Array`](pixels);
