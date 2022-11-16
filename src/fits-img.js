@@ -6,8 +6,7 @@ export class FitsImg extends FitsCanvas {
   willUpdate(changedProperties) {
     if (changedProperties.has('src')) {
       this._fetch().then(() => {
-        if (!this._rgbImage && this._ctx) {
-          this._rgbImage = this._ctx.createImageData(this.width, this.height);
+        if (this._ctx) {
           this.draw();
         }
       });
