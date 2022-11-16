@@ -38,8 +38,8 @@ export class FitsCanvas extends LitElement {
     this.depth = 1;
     this.frameIndex = 0;
     this.scaleCutoff = 0.999;
-    this._rawImageData = null;
     this.header = {};
+    this._rawImageData = null;
     this._canvas = null;
     this._ctx = null;
     this._stretchFunctions = {
@@ -105,14 +105,13 @@ export class FitsCanvas extends LitElement {
     const fullOpacity = 0xff;
     const rgbImage = this._ctx.createImageData(this.width, this.height);
     for (let row = 0; row < this.height; row += 1) {
-      for (let col = 0; col < this.width; col += 1) {
+      for (let col = 0; col < this.width; col += 1, index += 1) {
         const pos = ((this.height - row) * this.width + col) * 4;
         const rgb = this._colormaps[this.colormap](image[index]);
         rgbImage.data[pos] = rgb.r;
         rgbImage.data[pos + 1] = rgb.g;
         rgbImage.data[pos + 2] = rgb.b;
         rgbImage.data[pos + 3] = fullOpacity;
-        index += 1;
       }
     }
     return rgbImage;
