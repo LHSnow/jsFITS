@@ -14,6 +14,19 @@ import {
   colormapHeat,
 } from './colormap.js';
 
+export function dynamicRange(image, scaleCutoff) {
+  let min = 0;
+  let index = 0;
+  const sorted = image.slice().sort();
+  const maxPercentile = Math.ceil(sorted.length * scaleCutoff);
+  const max = sorted[maxPercentile];
+  while (min === 0 && index < sorted.length) {
+    min = sorted[(index += 1)];
+  }
+  const range = max - min;
+  return [min, range];
+}
+
 export class FitsCanvas extends LitElement {
   constructor() {
     super();
@@ -29,7 +42,6 @@ export class FitsCanvas extends LitElement {
     this.header = {};
     this._canvas = null;
     this._ctx = null;
-    this._rgbImage = null;
     this._stretchFunctions = {
       linear: stretchLinear,
       sqrt: stretchSqrt,
@@ -56,6 +68,16 @@ export class FitsCanvas extends LitElement {
     }
   }
 
+  draw() {
+    const hidden = this._canvas?.offsetParent === null;
+    if (hidden || !this._rawImageData || !this._ctx) return;
+
+    let image = this.imageFrame(this.frameIndex);
+    image = this._applyStretch(image);
+    image = this._applyColormap(image);
+    this._ctx.putImageData(image, 0, 0);
+  }
+
   imageFrame(frameIndex) {
     const frameSize = this.width * this.height;
     const frameStart = frameSize * frameIndex;
@@ -63,22 +85,9 @@ export class FitsCanvas extends LitElement {
     return this._rawImageData.slice(frameStart, frameEnd);
   }
 
-  // Calculate the pixel values using a defined stretch type and draw onto the canvas
-  draw() {
-    const hidden = this._canvas?.offsetParent === null;
-    if (hidden || !this._rawImageData || !this._ctx || !this._rgbImage) return;
-
-    let min = 0;
-    let index = 0;
-    const tmpImageData = new Uint8ClampedArray(this.width * this.height);
-    const image = this.imageFrame(this.frameIndex);
-    const sorted = image.slice().sort();
-    const maxPercentile = Math.ceil(tmpImageData.length * this.scaleCutoff);
-    const max = sorted[maxPercentile];
-    while (min === 0 && index < tmpImageData.length) {
-      min = sorted[(index += 1)];
-    }
-    const range = max - min;
+  _applyStretch(image) {
+    const tmpImageData = new Uint8ClampedArray(image.length);
+    const [min, range] = dynamicRange(image, this.scaleCutoff);
 
     let j = 0;
     for (let i = 0; i < tmpImageData.length; i += 1, j += 1) {
@@ -88,21 +97,25 @@ export class FitsCanvas extends LitElement {
       else if (val > 254) val = 254;
       tmpImageData[j] = val;
     }
+    return tmpImageData;
+  }
 
-    index = 0;
+  _applyColormap(image) {
+    let index = 0;
+    const fullOpacity = 0xff;
+    const rgbImage = this._ctx.createImageData(this.width, this.height);
     for (let row = 0; row < this.height; row += 1) {
       for (let col = 0; col < this.width; col += 1) {
         const pos = ((this.height - row) * this.width + col) * 4;
-        const rgb = this._colormaps[this.colormap](tmpImageData[index]);
-        this._rgbImage.data[pos] = rgb.r;
-        this._rgbImage.data[pos + 1] = rgb.g;
-        this._rgbImage.data[pos + 2] = rgb.b;
-        this._rgbImage.data[pos + 3] = 0xff; // alpha
+        const rgb = this._colormaps[this.colormap](image[index]);
+        rgbImage.data[pos] = rgb.r;
+        rgbImage.data[pos + 1] = rgb.g;
+        rgbImage.data[pos + 2] = rgb.b;
+        rgbImage.data[pos + 3] = fullOpacity;
         index += 1;
       }
     }
-
-    this._ctx.putImageData(this._rgbImage, 0, 0);
+    return rgbImage;
   }
 }
 
@@ -113,7 +126,10 @@ FitsCanvas.properties = {
   width: { type: Number },
   height: { type: Number },
   depth: { type: Number, reflect: true },
-  frameIndex: { type: Number, attribute: 'frame-index' },
+  frameIndex: {
+    type: Number,
+    attribute: 'frame-index',
+  },
   scaleCutoff: {
     type: Number,
     attribute: 'scale-cutoff',
