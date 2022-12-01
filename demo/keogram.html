@@ -2,37 +2,47 @@
 <html lang="en-GB">
 <head>
   <meta charset="utf-8" />
-  <style>
-      fits-demo {
-          display: flex;
-          flex-direction: column;
-      }
-  </style>
+  <link rel="stylesheet" href="https://www.irf.se/branding/irf.css">
 </head>
 <body>
+<label class="color-scheme">
+  <input type="checkbox"> Darkmode
+</label>
+<h1>ALIS_4D quicklook</h1>
 <script type="module">
-    import { html, LitElement } from 'lit';
+    import { css, html, LitElement } from 'lit';
     import '../src/fits-img.js';
     import '../src/fits-keogram.js';
 
     export class FITSDemo extends LitElement {
-        static properties = {
-            _src: { type: String },
-            _stretch: { type: String },
-            _colormap: { type: String },
-            _scaleCutoff: { type: Number },
-            _wavelength: { type: String }
-        };
-
         constructor() {
             super();
             this._files = {}
-            this._stretch = 'linear';
-            this._colormap = 'gray';
+            this._stretch = 'sqrt';
+            this._colormap = 'B';
             this._scaleCutoff = 0.999;
             this._wavelength = '5577';
             this._stations = new Set();
         }
+
+        static styles = css`
+          figure {
+            display: flex;
+            background-color: black;
+            margin-left: 0;
+            height: 130px;
+          }
+          figcaption {
+            font-size: 2em;
+            display: block;
+            vertical-align: center;
+            color: white;
+            padding: .5em;
+          }
+          input, select {
+            margin-right: .5em;
+          }
+        `;
 
         async connectedCallback() {
           super.connectedCallback();
@@ -108,14 +118,12 @@
             })
 
             return html`
-            <h1>&lt;fits-keogram&gt; interactive demo</h1>
-            <p><a href="index.html">Full size image interactive demo</a></p>
             <p>
             <label
               >Stretch
               <select @change="${this._changeStretch}">
                 <option>linear</option>
-                <option>sqrt</option>
+                <option selected>sqrt</option>
                 <option>cuberoot</option>
                 <option>log</option>
                 <option>sqrtlog</option>
@@ -128,7 +136,7 @@
                 <option>gray</option>
                 <option>heat</option>
                 <option>A</option>
-                <option>B</option>
+                <option selected>B</option>
               </select></label
             >
             <label
@@ -136,7 +144,7 @@
               <input
                 type="number"
                 @change="${this._changeScaleCutoff}"
-                value="${this._scaleCutoff}"
+                .value="${this._scaleCutoff}"
                 step="0.001"
                 min="0"
                 max="1"
@@ -157,8 +165,17 @@
             `;
         }
     }
+    FITSDemo.properties = {
+      _src: { type: String },
+      _stretch: { type: String },
+      _colormap: { type: String },
+      _scaleCutoff: { type: Number },
+      _wavelength: { type: String }
+    };
+
     customElements.define('fits-demo', FITSDemo);
 </script>
+<script src="https://www.irf.se/branding/irf-toggle-color-scheme.js"></script>
 <fits-demo></fits-demo>
 </body>
 </html>
