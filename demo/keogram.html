@@ -1,127 +1,155 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang='en-GB'>
 <head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="https://www.irf.se/branding/irf.css">
+  <meta charset='utf-8' />
+  <link rel='stylesheet' href='https://www.irf.se/branding/irf.css'>
 </head>
 <body>
-<label class="color-scheme">
-  <input type="checkbox"> Darkmode
+<label class='color-scheme'>
+  <input type='checkbox'> Darkmode
 </label>
 <h1>ALIS_4D quicklook</h1>
-<script type="module">
-    import { css, html, LitElement } from 'lit';
-    import '../src/fits-img.js';
-    import '../src/fits-keogram.js';
+<script type='module'>
+  import { css, html, LitElement } from 'lit';
+  import '../src/fits-img.js';
+  import '../src/fits-keogram.js';
 
-    export class FITSDemo extends LitElement {
-        constructor() {
-            super();
-            this._files = {}
-            this._stretch = 'sqrt';
-            this._colormap = 'B';
-            this._scaleCutoff = 0.999;
-            this._wavelength = '5577';
-            this._stations = new Set();
-        }
+  const urlDateFormat = (date) => {
+    return date.toISOString().slice(0, 10);
+  };
 
-        static styles = css`
-          figure {
-            display: flex;
-            background-color: black;
-            margin-left: 0;
-            height: 130px;
-          }
-          figcaption {
-            font-size: 2em;
-            display: block;
-            vertical-align: center;
-            color: white;
-            padding: .5em;
-          }
-          input, select {
-            margin-right: .5em;
-          }
-        `;
+  export class FITSDemo extends LitElement {
 
-        async connectedCallback() {
-          super.connectedCallback();
-          await this.loadData();
-        }
+    constructor() {
+      super();
+      this._files = {};
+      this._stretch = 'sqrt';
+      this._colormap = 'B';
+      this._scaleCutoff = 0.999;
+      this._wavelength = '5577';
+      this._stations = new Set();
+      const dateParam = new URLSearchParams(window.location.search).get('date');
+      const yesterday = new Date().setDate(new Date().getDate() - 1);
+      this._date = dateParam || urlDateFormat(yesterday);
+    }
 
-        async loadData() {
-          await new Promise((r) => setTimeout(r, 0));
-          const evening = await fetch('api/2022/03/30/cube.json');
-          const morning = await fetch('api/2022/03/31/cube.json');
-          let eveningCubes = await evening.json();
-          let morningCubes = await morning.json();
+    static styles = css`
+      figure {
+        display: flex;
+        background-color: black;
+        margin-left: 0;
+        height: 130px;
+      }
 
-          eveningCubes = eveningCubes.filter(cube => Number(cube.split('/').slice(-2,-1)) >= 12)
-          morningCubes = morningCubes.filter(cube => Number(cube.split('/').slice(-2,-1)) <= 12)
+      figcaption {
+        font-size: 2em;
+        display: block;
+        vertical-align: center;
+        color: white;
+        padding: .5em;
+      }
 
-          let cubes = eveningCubes.concat(morningCubes);
+      input, select {
+        margin-right: .5em;
+      }
+    `;
 
-          cubes = cubes.filter(cube => !cube.includes('-10'));
-          cubes.forEach(cube => {
-            const station = cube.slice(-16, -15);
-            const wavelength = cube.slice(-14, -10);
-            this._files[wavelength] = this._files[wavelength] || {};
-            this._files[wavelength][station] = this._files[wavelength][station] || [];
-            this._files[wavelength][station].push(cube);
-            this._stations.add(station);
-          })
-          this.requestUpdate();
-        }
+    async connectedCallback() {
+      super.connectedCallback();
+      await this.loadData();
+    }
 
-        _changeStretch(event) {
-            this._stretch = event.target.value;
-        }
+    async loadData() {
+      await new Promise((r) => setTimeout(r, 0));
+      let tomorrow = new Date(Date.parse(this._date));
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      const eveningDate = this._date.replaceAll('-', '/');
+      const morningDate = urlDateFormat(tomorrow).replaceAll('-', '/');
 
-        _changeColormap(event) {
-            this._colormap = event.target.value;
-        }
+      const eveningResponse = await fetch(`api/${eveningDate}/cube.json`);
+      const morningResponse = await fetch(`api/${morningDate}/cube.json`);
+      let eveningCubes = await eveningResponse.json();
+      let morningCubes = await morningResponse.json();
 
-        _changeScaleCutoff(event) {
-            this._scaleCutoff = event.target.value;
-        }
+      eveningCubes = eveningCubes.filter(cube => Number(cube.split('/').slice(-2, -1)) >= 12);
+      morningCubes = morningCubes.filter(cube => Number(cube.split('/').slice(-2, -1)) < 12);
 
-        _changeWavelength(event) {
-          this._wavelength = event.target.value;
-        }
+      let cubes = eveningCubes.concat(morningCubes);
 
-        images(station) {
-          if(!this._files || !this._files[this._wavelength]) {
-            return html``;
-          }
-          station = station.toUpperCase();
-          return this._files[this._wavelength][station].map(cube => {
-            const filename = cube.slice(2);
-            const dateDirs = filename.slice(3).split('T')[0].replaceAll('-', '/')
-            return html`<fits-img
-              src="files/${dateDirs}/${filename}"
+      cubes = cubes.filter(cube => !cube.includes('-10'));
+      cubes.forEach(cube => {
+        const station = cube.slice(-16, -15);
+        const wavelength = cube.slice(-14, -10);
+        this._files[wavelength] = this._files[wavelength] || {};
+        this._files[wavelength][station] = this._files[wavelength][station] || [];
+        this._files[wavelength][station].push(cube);
+        this._stations.add(station);
+      });
+      this.requestUpdate();
+    }
+
+
+
+    _changeDate(event) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const changedDate = urlDateFormat(new Date(event.target.value));
+      urlParams.set("date", changedDate);
+      window.location.search = urlParams;
+    }
+
+    _changeStretch(event) {
+      this._stretch = event.target.value;
+    }
+
+    _changeColormap(event) {
+      this._colormap = event.target.value;
+    }
+
+    _changeScaleCutoff(event) {
+      this._scaleCutoff = event.target.value;
+    }
+
+    _changeWavelength(event) {
+      this._wavelength = event.target.value;
+    }
+
+    images(station) {
+      if (!this._files || !this._files[this._wavelength]) {
+        return html``;
+      }
+      station = station.toUpperCase();
+      return this._files[this._wavelength][station].map(cube => {
+        const filename = cube.slice(2);
+        const dateDirs = filename.slice(3).split('T')[0].replaceAll('-', '/');
+        return html`<fits-img
+              src='files/${dateDirs}/${filename}'
               ></fits-img>`;
-          })
-        }
+      });
+    }
 
-        render() {
-            const stations = Array.from(this._stations).map(key => {
-              return html`
+    render() {
+      const stations = Array.from(this._stations).map(key => {
+        return html`
                 <figure>
                   <figcaption>${key}</figcaption>
-                  <fits-keogram stretch=${this._stretch}
-                    colormap=${this._colormap}
-                    scale-cutoff="${this._scaleCutoff}">
+                  <fits-keogram stretch='${this._stretch}'
+                    colormap='${this._colormap}'
+                    scale-cutoff='${this._scaleCutoff}'>
                     ${this.images(key)}
                   </fits-keogram>
                 </figure>
-              `
-            })
+              `;
+      });
 
-            return html`
+      return html`
             <p>
+            <label>
+              Data of night beginning on
+              <input type='date' @change='${this._changeDate}' .value='${this._date}'>
+            </label>
             <label
               >Stretch
-              <select @change="${this._changeStretch}">
+              <select @change='${this._changeStretch}'>
                 <option>linear</option>
                 <option selected>sqrt</option>
                 <option>cuberoot</option>
@@ -132,7 +160,7 @@
             >
             <label
               >Colormap
-              <select @change="${this._changeColormap}">
+              <select @change='${this._changeColormap}'>
                 <option>gray</option>
                 <option>heat</option>
                 <option>A</option>
@@ -142,17 +170,17 @@
             <label
               >Scale cutoff
               <input
-                type="number"
-                @change="${this._changeScaleCutoff}"
-                .value="${this._scaleCutoff}"
-                step="0.001"
-                min="0"
-                max="1"
+                type='number'
+                @change='${this._changeScaleCutoff}'
+                .value='${this._scaleCutoff}'
+                step='0.001'
+                min='0'
+                max='1'
               />
             </label>
             <label>
               Wavelength (Å)
-              <select @change="${this._changeWavelength}" value="${this._wavelength}">
+              <select @change='${this._changeWavelength}' value='${this._wavelength}'>
                 <option>4278</option>
                 <option selected>5577</option>
                 <option>6300</option>
@@ -163,19 +191,20 @@
               ${stations}
             </div>
             `;
-        }
     }
-    FITSDemo.properties = {
-      _src: { type: String },
-      _stretch: { type: String },
-      _colormap: { type: String },
-      _scaleCutoff: { type: Number },
-      _wavelength: { type: String }
-    };
+  }
 
-    customElements.define('fits-demo', FITSDemo);
+  FITSDemo.properties = {
+    _src: { type: String },
+    _stretch: { type: String },
+    _colormap: { type: String },
+    _scaleCutoff: { type: Number },
+    _wavelength: { type: String }
+  };
+
+  customElements.define('fits-demo', FITSDemo);
 </script>
-<script src="https://www.irf.se/branding/irf-toggle-color-scheme.js"></script>
+<script src='https://www.irf.se/branding/irf-toggle-color-scheme.js'></script>
 <fits-demo></fits-demo>
 </body>
 </html>
