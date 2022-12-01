@@ -62,7 +62,7 @@
     async loadData() {
       await new Promise((r) => setTimeout(r, 0));
       let tomorrow = new Date(Date.parse(this._date));
-      tomorrow.setDate(tomorrow.getDate() + 1)
+      tomorrow.setDate(tomorrow.getDate() + 1);
       const eveningDate = this._date.replaceAll('-', '/');
       const morningDate = urlDateFormat(tomorrow).replaceAll('-', '/');
 
@@ -89,11 +89,10 @@
     }
 
 
-
     _changeDate(event) {
       const urlParams = new URLSearchParams(window.location.search);
       const changedDate = urlDateFormat(new Date(event.target.value));
-      urlParams.set("date", changedDate);
+      urlParams.set('date', changedDate);
       window.location.search = urlParams;
     }
 
@@ -114,83 +113,92 @@
     }
 
     images(station) {
-      if (!this._files || !this._files[this._wavelength]) {
+      station = station.toUpperCase();
+      if (!this._files || !this._files[this._wavelength] || !this._files[this._wavelength][station]) {
         return html``;
       }
-      station = station.toUpperCase();
       return this._files[this._wavelength][station].map(cube => {
         const filename = cube.slice(2);
         const dateDirs = filename.slice(3).split('T')[0].replaceAll('-', '/');
-        return html`<fits-img
-              src='files/${dateDirs}/${filename}'
-              ></fits-img>`;
+        return html`
+          <fits-img
+            src='files/${dateDirs}/${filename}'
+          ></fits-img>`;
+      });
+    }
+
+    wavelengths() {
+      if (!this._files || !this._files[this._wavelength]) {
+        return html``;
+      }
+      return Object.keys(this._files).map(wavelength => {
+        return html`
+          <option ?selected='${wavelength === this._wavelength}'>${wavelength}</option>`;
       });
     }
 
     render() {
       const stations = Array.from(this._stations).map(key => {
         return html`
-                <figure>
-                  <figcaption>${key}</figcaption>
-                  <fits-keogram stretch='${this._stretch}'
-                    colormap='${this._colormap}'
-                    scale-cutoff='${this._scaleCutoff}'>
-                    ${this.images(key)}
-                  </fits-keogram>
-                </figure>
-              `;
+          <figure>
+            <figcaption>${key}</figcaption>
+            <fits-keogram .stretch='${this._stretch}'
+                          .colormap='${this._colormap}'
+                          .scale-cutoff='${this._scaleCutoff}'>
+              ${this.images(key)}
+            </fits-keogram>
+          </figure>
+        `;
       });
 
       return html`
-            <p>
-            <label>
-              Data of night beginning on
-              <input type='date' @change='${this._changeDate}' .value='${this._date}'>
-            </label>
-            <label
-              >Stretch
-              <select @change='${this._changeStretch}'>
-                <option>linear</option>
-                <option selected>sqrt</option>
-                <option>cuberoot</option>
-                <option>log</option>
-                <option>sqrtlog</option>
-                <option>loglog</option>
-              </select></label
-            >
-            <label
-              >Colormap
-              <select @change='${this._changeColormap}'>
-                <option>gray</option>
-                <option>heat</option>
-                <option>A</option>
-                <option selected>B</option>
-              </select></label
-            >
-            <label
-              >Scale cutoff
-              <input
-                type='number'
-                @change='${this._changeScaleCutoff}'
-                .value='${this._scaleCutoff}'
-                step='0.001'
-                min='0'
-                max='1'
-              />
-            </label>
-            <label>
-              Wavelength (Å)
-              <select @change='${this._changeWavelength}' value='${this._wavelength}'>
-                <option>4278</option>
-                <option selected>5577</option>
-                <option>6300</option>
-              </select>
-            </label>
-            </p>
-            <div>
-              ${stations}
-            </div>
-            `;
+        <p>
+          <label>
+            Data of night beginning on
+            <input type='date' @change='${this._changeDate}' .value='${this._date}'>
+          </label>
+          <label
+          >Stretch
+            <select @change='${this._changeStretch}' .value='${this._stretch}'>
+              <option>linear</option>
+              <option>sqrt</option>
+              <option>cuberoot</option>
+              <option>log</option>
+              <option>sqrtlog</option>
+              <option>loglog</option>
+            </select></label
+          >
+          <label
+          >Colormap
+            <select @change='${this._changeColormap}' .value='${this._colormap}'>
+              <option>gray</option>
+              <option>heat</option>
+              <option>A</option>
+              <option>B</option>
+            </select></label
+          >
+          <label
+          >Scale cutoff
+            <input
+              type='number'
+              @change='${this._changeScaleCutoff}'
+              .value='${this._scaleCutoff.toString()}'
+              step='0.001'
+              min='0'
+              max='1'
+            />
+          </label>
+          <label>
+            Wavelength (Å)
+            <select @change='${this._changeWavelength}'>
+              ${this.wavelengths()}
+            </select>
+          </label>
+        </p>
+        <div>
+          ${stations}
+        </div>
+      `;
     }
   }
 
