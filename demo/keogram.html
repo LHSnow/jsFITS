@@ -31,6 +31,7 @@
       const dateParam = new URLSearchParams(window.location.search).get('date');
       const yesterday = new Date().setDate(new Date().getDate() - 1);
       this._date = dateParam || urlDateFormat(yesterday);
+      this._error = null;
     }
 
     static styles = css`
@@ -52,6 +53,12 @@
       input, select {
         margin-right: .5em;
       }
+
+      .error {
+        border-left: 5px double rgb(175,39,47);
+        padding: .5em;
+        background-color: rgba(175,39,47,0.2);
+      }
     `;
 
     async connectedCallback() {
@@ -68,6 +75,10 @@
 
       const eveningResponse = await fetch(`api/${eveningDate}/cube.json`);
       const morningResponse = await fetch(`api/${morningDate}/cube.json`);
+      if(eveningResponse.status >= 400 || morningResponse >= 400) {
+        this._error = "noData";
+        return;
+      }
       let eveningCubes = await eveningResponse.json();
       let morningCubes = await morningResponse.json();
 
@@ -129,7 +140,7 @@
 
     wavelengths() {
       if (!this._files || !this._files[this._wavelength]) {
-        return html``;
+        return html`<option disabled selected>ERROR</option>`;
       }
       return Object.keys(this._files).map(wavelength => {
         return html`
@@ -152,6 +163,7 @@
       });
 
       return html`
+        <link rel='stylesheet' href='https://www.irf.se/branding/irf.css'>
         <p>
           <label>
             Data of night beginning on
@@ -196,6 +208,9 @@
           </label>
         </p>
         <div>
+          <p class='error' ?hidden='${this._error !== "noData"}'>
+            No data found for this date, select another or <a href='?date=2022-03-30'>the date we use for testing</a>
+          </p>
           ${stations}
         </div>
       `;
@@ -207,7 +222,8 @@
     _stretch: { type: String },
     _colormap: { type: String },
     _scaleCutoff: { type: Number },
-    _wavelength: { type: String }
+    _wavelength: { type: String },
+    _error: { type: String }
   };
 
   customElements.define('fits-demo', FITSDemo);
