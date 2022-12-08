@@ -30,7 +30,7 @@
       this._stations = new Set();
       const dateParam = new URLSearchParams(window.location.search).get('date');
       const yesterday = new Date().setDate(new Date().getDate() - 1);
-      this._date = dateParam || urlDateFormat(yesterday);
+      this._date = dateParam || urlDateFormat(new Date(yesterday));
       this._error = null;
     }
 
