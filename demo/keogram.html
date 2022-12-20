@@ -75,12 +75,12 @@
 
       const eveningResponse = await fetch(`api/${eveningDate}/cube.json`);
       const morningResponse = await fetch(`api/${morningDate}/cube.json`);
-      if(eveningResponse.status >= 400 || morningResponse >= 400) {
+      if(!eveningResponse.ok && !morningResponse.ok) {
         this._error = "noData";
         return;
       }
-      let eveningCubes = await eveningResponse.json();
-      let morningCubes = await morningResponse.json();
+      let eveningCubes = eveningResponse.ok ? await eveningResponse.json() : [];
+      let morningCubes = morningResponse.ok ? await morningResponse.json() : [];
 
       eveningCubes = eveningCubes.filter(cube => Number(cube.split('/').slice(-2, -1)) >= 12);
       morningCubes = morningCubes.filter(cube => Number(cube.split('/').slice(-2, -1)) < 12);
